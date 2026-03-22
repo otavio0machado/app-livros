@@ -1,12 +1,22 @@
 import { GoogleGenAI } from '@google/genai';
 import type { GeminiAnalysis } from '@/types';
 
-const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY! });
+let _ai: GoogleGenAI | null = null;
+
+function getAI(): GoogleGenAI {
+  if (!_ai) {
+    const key = process.env.GEMINI_API_KEY;
+    if (!key) throw new Error('GEMINI_API_KEY not set');
+    _ai = new GoogleGenAI({ apiKey: key });
+  }
+  return _ai;
+}
 
 export async function analyzeBookImage(
   imageBase64: string,
   mimeType: string
 ): Promise<GeminiAnalysis> {
+  const ai = getAI();
   const response = await ai.models.generateContent({
     model: 'gemini-2.5-flash',
     contents: [

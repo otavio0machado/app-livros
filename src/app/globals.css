@@ -1,17 +1,45 @@
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
-
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
+  --color-warm-50: #faf9f7;
+  --color-warm-100: #f5f3f0;
+  --color-warm-200: #e8e4de;
+  --color-warm-300: #d4cec4;
+  --color-warm-400: #a39e93;
+  --color-warm-500: #7a756b;
+  --color-warm-600: #5c574f;
+  --color-warm-700: #45413b;
+  --color-warm-800: #2d2a26;
+  --color-warm-900: #1a1815;
+
+  --color-olive-50: #f4f6f0;
+  --color-olive-100: #e6eadd;
+  --color-olive-200: #cdd6bb;
+  --color-olive-300: #a8b88e;
+  --color-olive-400: #879a6a;
+  --color-olive-500: #6b7f4e;
+  --color-olive-600: #54653c;
+  --color-olive-700: #3f4d2d;
+  --color-olive-800: #2d3720;
+  --color-olive-900: #1c2315;
+
+  --color-whatsapp: #25D366;
+  --color-whatsapp-dark: #1fba59;
+
   --font-sans: var(--font-geist-sans);
 }
 
+* {
+  -webkit-tap-highlight-color: transparent;
+}
+
 body {
-  background: var(--background);
-  color: var(--foreground);
+  background: var(--color-warm-50);
+  color: var(--color-warm-900);
+  -webkit-font-smoothing: antialiased;
+}
+
+::selection {
+  background: var(--color-olive-200);
+  color: var(--color-olive-900);
 }

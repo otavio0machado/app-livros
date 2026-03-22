@@ -23,10 +23,10 @@ export default function AddToCartButton({ book }: { book: Book }) {
     <button
       onClick={handleAdd}
       disabled={inCart}
-      className={`w-full py-4 rounded-2xl font-semibold text-lg transition ${
+      className={`w-full py-3.5 rounded-xl font-medium text-base transition-all ${
         inCart
-          ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
-          : 'bg-blue-600 text-white hover:bg-blue-700 active:scale-[0.98]'
+          ? 'bg-warm-100 text-warm-400'
+          : 'bg-warm-900 text-warm-50 hover:bg-warm-800 active:scale-[0.98]'
       }`}
     >
       {inCart ? 'Já está no carrinho' : 'Adicionar ao carrinho'}

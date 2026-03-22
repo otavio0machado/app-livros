@@ -25,7 +25,7 @@ export default function SearchBar() {
       if (search) params.set('search', search);
       if (category) params.set('category', category);
       if (type) params.set('type', type);
-      router.push(`/?${params.toString()}`);
+      router.push(`/loja?${params.toString()}`);
     }, 300);
 
     return () => clearTimeout(timeout);
@@ -35,7 +35,7 @@ export default function SearchBar() {
     <div className="space-y-3">
       <div className="relative">
         <svg
-          className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400"
+          className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-warm-400"
           fill="none"
           stroke="currentColor"
           viewBox="0 0 24 24"
@@ -44,35 +44,31 @@ export default function SearchBar() {
         </svg>
         <input
           type="text"
-          placeholder="Buscar por título, autor..."
+          placeholder="Buscar por título ou autor..."
           value={search}
           onChange={(e) => setSearch(e.target.value)}
-          className="w-full pl-10 pr-4 py-3 rounded-xl border border-gray-200 focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition text-gray-900 bg-white"
+          className="w-full pl-10 pr-4 py-2.5 rounded-xl border border-warm-200 bg-white focus:ring-2 focus:ring-olive-300 focus:border-olive-300 outline-none transition text-warm-800 text-sm placeholder:text-warm-400"
         />
       </div>
 
-      <div className="flex gap-2 overflow-x-auto pb-1 -mx-1 px-1">
+      <div className="flex gap-2">
         <select
           value={type}
           onChange={(e) => setType(e.target.value)}
-          className="flex-shrink-0 px-3 py-2 rounded-lg border border-gray-200 text-sm text-gray-700 bg-white outline-none focus:ring-2 focus:ring-blue-500"
+          className="px-3 py-2 rounded-lg border border-warm-200 bg-white text-sm text-warm-700 outline-none focus:ring-2 focus:ring-olive-300"
         >
           {TYPES.map((t) => (
-            <option key={t} value={t === 'Todos' ? '' : t}>
-              {t}
-            </option>
+            <option key={t} value={t === 'Todos' ? '' : t}>{t}</option>
           ))}
         </select>
 
         <select
           value={category}
           onChange={(e) => setCategory(e.target.value)}
-          className="flex-shrink-0 px-3 py-2 rounded-lg border border-gray-200 text-sm text-gray-700 bg-white outline-none focus:ring-2 focus:ring-blue-500"
+          className="px-3 py-2 rounded-lg border border-warm-200 bg-white text-sm text-warm-700 outline-none focus:ring-2 focus:ring-olive-300 min-w-0 flex-1"
         >
           {CATEGORIES.map((c) => (
-            <option key={c} value={c === 'Todos' ? '' : c}>
-              {c}
-            </option>
+            <option key={c} value={c === 'Todos' ? '' : c}>{c}</option>
           ))}
         </select>
       </div>

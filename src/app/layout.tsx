@@ -1,23 +1,24 @@
 import type { Metadata, Viewport } from "next";
-import { Geist } from "next/font/google";
+import { Inter } from "next/font/google";
 import "./globals.css";
 import { CartProvider } from "@/components/CartProvider";
 import CartButton from "@/components/CartButton";
 
-const geistSans = Geist({
+const inter = Inter({
   variable: "--font-geist-sans",
   subsets: ["latin"],
+  display: "swap",
 });
 
 export const metadata: Metadata = {
-  title: "Livros & Apostilas",
-  description: "Livros e apostilas usados com preço justo. Compre via WhatsApp!",
+  title: "Livros do Otávio",
+  description: "Livros e apostilas usados com preço justo. Escolha, adicione ao carrinho e finalize pelo WhatsApp.",
 };
 
 export const viewport: Viewport = {
   width: "device-width",
   initialScale: 1,
-  maximumScale: 1,
+  maximumScale: 5,
 };
 
 export default function RootLayout({
@@ -26,8 +27,8 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="pt-BR" className={`${geistSans.variable} h-full antialiased`}>
-      <body className="min-h-full flex flex-col font-[family-name:var(--font-geist-sans)] bg-white text-gray-900">
+    <html lang="pt-BR" className={`${inter.variable}`}>
+      <body className="min-h-screen font-sans">
         <CartProvider>
           {children}
           <CartButton />
