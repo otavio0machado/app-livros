@@ -91,22 +91,22 @@ export default async function LivroPage({ params }: { params: Promise<{ id: stri
             <p className="text-warm-500 mt-1">{book.author}</p>
           </div>
 
-          <div className="flex items-center gap-3">
+          <div className="flex flex-wrap items-center gap-2 sm:gap-3">
             {book.collection_discount_pct && book.collection_discount_pct > 0 ? (
               <>
-                <p className="text-lg text-warm-400 line-through">
+                <p className="text-base sm:text-lg text-warm-400 line-through">
                   R$ {formatPrice(Math.round(book.price_cents / (1 - book.collection_discount_pct / 100)))}
                 </p>
-                <p className="text-2xl font-bold text-warm-900">
-                  <span className="text-sm font-normal text-warm-500">R$</span> {formatPrice(book.price_cents)}
+                <p className="text-xl sm:text-2xl font-bold text-warm-900">
+                  <span className="text-xs sm:text-sm font-normal text-warm-500">R$</span> {formatPrice(book.price_cents)}
                 </p>
-                <span className="bg-red-500 text-white text-xs font-bold px-2 py-1 rounded-lg">
+                <span className="bg-red-500 text-white text-[11px] sm:text-xs font-bold px-2 py-0.5 sm:py-1 rounded-lg">
                   -{book.collection_discount_pct}%
                 </span>
               </>
             ) : (
-              <p className="text-2xl font-bold text-warm-900">
-                <span className="text-sm font-normal text-warm-500">R$</span> {formatPrice(book.price_cents)}
+              <p className="text-xl sm:text-2xl font-bold text-warm-900">
+                <span className="text-xs sm:text-sm font-normal text-warm-500">R$</span> {formatPrice(book.price_cents)}
               </p>
             )}
           </div>
@@ -145,7 +145,7 @@ export default async function LivroPage({ params }: { params: Promise<{ id: stri
 
           {/* Details */}
           <div className="border-t border-warm-200 pt-4">
-            <div className="grid grid-cols-2 gap-y-3 gap-x-6 text-sm">
+            <div className="grid grid-cols-2 gap-y-3 gap-x-4 sm:gap-x-6 text-sm">
               {book.publisher && (
                 <div>
                   <p className="text-warm-400 text-xs">Editora</p>

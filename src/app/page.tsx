@@ -18,24 +18,24 @@ export default function LandingPage() {
       </nav>
 
       {/* Hero */}
-      <section className="max-w-3xl mx-auto px-5 pt-20 pb-16 sm:pt-28 sm:pb-24">
+      <section className="max-w-3xl mx-auto px-5 pt-12 pb-12 sm:pt-28 sm:pb-24">
         <div className="max-w-lg">
-          <p className="text-navy-600 text-sm font-medium mb-4 tracking-wide uppercase">
+          <p className="text-navy-600 text-xs sm:text-sm font-medium mb-3 sm:mb-4 tracking-wide uppercase">
             Acervo pessoal
           </p>
-          <h1 className="text-3xl sm:text-4xl font-bold text-warm-900 leading-tight tracking-tight">
-            Livros e apostilas usados, com preço justo.
+          <h1 className="text-2xl sm:text-4xl font-bold text-warm-900 leading-tight tracking-tight">
+            Livros e apostilas usados, com preco justo.
           </h1>
-          <p className="mt-4 text-warm-500 text-lg leading-relaxed">
+          <p className="mt-3 sm:mt-4 text-warm-500 text-base sm:text-lg leading-relaxed">
             Estou vendendo meu acervo pessoal de livros e apostilas de cursinho.
             Tudo organizado, com fotos reais e compra simplificada pelo WhatsApp.
           </p>
-          <div className="mt-8 flex flex-col sm:flex-row gap-3">
+          <div className="mt-6 sm:mt-8">
             <Link
               href="/loja"
-              className="inline-flex items-center justify-center px-6 py-3.5 bg-navy-700 text-white rounded-xl font-medium hover:bg-navy-600 active:scale-[0.98] transition-all text-base"
+              className="w-full sm:w-auto inline-flex items-center justify-center px-6 py-3.5 bg-navy-700 text-white rounded-xl font-medium hover:bg-navy-600 active:scale-[0.98] transition-all text-base"
             >
-              Ver livros disponíveis
+              Ver livros disponiveis
             </Link>
           </div>
         </div>
@@ -47,11 +47,11 @@ export default function LandingPage() {
       </div>
 
       {/* How it works */}
-      <section className="max-w-3xl mx-auto px-5 py-16 sm:py-20">
-        <h2 className="text-sm font-medium text-warm-400 uppercase tracking-wide mb-10">
+      <section className="max-w-3xl mx-auto px-5 py-10 sm:py-20">
+        <h2 className="text-sm font-medium text-warm-400 uppercase tracking-wide mb-6 sm:mb-10">
           Como funciona
         </h2>
-        <div className="grid sm:grid-cols-3 gap-8 sm:gap-6">
+        <div className="grid sm:grid-cols-3 gap-6 sm:gap-6">
           <div>
             <div className="w-10 h-10 rounded-full bg-navy-100 text-navy-700 flex items-center justify-center text-sm font-semibold mb-4">
               1
@@ -88,7 +88,7 @@ export default function LandingPage() {
       </div>
 
       {/* Differentials */}
-      <section className="max-w-3xl mx-auto px-5 py-16 sm:py-20">
+      <section className="max-w-3xl mx-auto px-5 py-10 sm:py-20">
         <div className="grid sm:grid-cols-3 gap-6">
           <div className="bg-warm-100/60 rounded-2xl p-5">
             <p className="text-warm-800 font-semibold text-sm mb-1">Fotos reais</p>
@@ -112,18 +112,18 @@ export default function LandingPage() {
       </section>
 
       {/* Final CTA */}
-      <section className="max-w-3xl mx-auto px-5 pb-20 sm:pb-28 text-center">
-        <h2 className="text-2xl font-bold text-warm-900 mb-3">
+      <section className="max-w-3xl mx-auto px-5 pb-16 sm:pb-28 text-center">
+        <h2 className="text-xl sm:text-2xl font-bold text-warm-900 mb-3">
           Pronto pra dar uma olhada?
         </h2>
-        <p className="text-warm-500 mb-6">
-          Veja o que tenho disponível e monte seu pedido.
+        <p className="text-warm-500 text-sm sm:text-base mb-6">
+          Veja o que tenho disponivel e monte seu pedido.
         </p>
         <Link
           href="/loja"
-          className="inline-flex items-center justify-center px-8 py-4 bg-navy-700 text-white rounded-xl font-medium hover:bg-navy-600 active:scale-[0.98] transition-all text-base"
+          className="w-full sm:w-auto inline-flex items-center justify-center px-8 py-4 bg-navy-700 text-white rounded-xl font-medium hover:bg-navy-600 active:scale-[0.98] transition-all text-base"
         >
-          Ver livros disponíveis
+          Ver livros disponiveis
         </Link>
       </section>
 

@@ -510,7 +510,7 @@ export default function ColecaoPage() {
                 onChange={(e) => setDiscountPct(parseInt(e.target.value) || 0)}
                 min={0}
                 max={50}
-                className="w-24 px-3 py-2 rounded-lg border border-warm-200 text-sm text-warm-900 outline-none focus:ring-2 focus:ring-navy-200"
+                className="w-full sm:w-24 px-3 py-2.5 rounded-xl border border-warm-200 text-sm text-warm-900 outline-none focus:ring-2 focus:ring-navy-200"
               />
             </div>
           )}
@@ -549,7 +549,7 @@ export default function ColecaoPage() {
                   {searchQuery ? 'Nenhum livro encontrado.' : 'Nenhum livro disponivel.'}
                 </p>
               ) : (
-                <div className="space-y-1 max-h-80 overflow-y-auto rounded-xl border border-warm-200">
+                <div className="space-y-1 max-h-64 sm:max-h-80 overflow-y-auto rounded-xl border border-warm-200">
                   {filteredBooks.map((book) => {
                     const isSel = selectedBookIds.has(book.id);
                     return (
@@ -788,7 +788,7 @@ export default function ColecaoPage() {
               {mode !== 'collection-only' && (
                 <div className="bg-white border border-warm-200 rounded-2xl p-4 mb-4">
                   <label className="block text-sm font-medium text-warm-700 mb-3">Calculo do preco</label>
-                  <div className="grid grid-cols-3 gap-3 items-end">
+                  <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 items-end">
                     <div>
                       <label className="block text-xs text-warm-500 mb-1">Preco cheio (R$)</label>
                       <input

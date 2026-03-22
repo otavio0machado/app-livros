@@ -48,12 +48,12 @@ export default function MediaGallery({ items }: { items: MediaItem[] }) {
 
       {/* Thumbnails */}
       {items.length > 1 && (
-        <div className="flex gap-2 mt-3 overflow-x-auto pb-1 -mx-1 px-1">
+        <div className="flex gap-2 mt-3 overflow-x-auto pb-2 -mx-1 px-1 scrollbar-none">
           {items.map((item, i) => (
             <button
               key={i}
               onClick={() => setSelected(i)}
-              className={`relative w-16 h-16 rounded-lg overflow-hidden flex-shrink-0 border-2 transition ${
+              className={`relative w-[4.5rem] h-[4.5rem] sm:w-16 sm:h-16 rounded-xl overflow-hidden flex-shrink-0 border-2 transition ${
                 i === selected ? 'border-navy-600' : 'border-transparent opacity-60 hover:opacity-100'
               }`}
             >

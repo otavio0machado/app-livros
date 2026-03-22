@@ -48,7 +48,7 @@ export default function AiAnalysisPanel({ loading, analysis, error, onApply }: A
         </button>
       </div>
 
-      <div className="grid grid-cols-2 gap-2 text-xs">
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs sm:text-sm">
         <div>
           <span className="text-green-600">Título:</span>
           <p className="text-gray-900 font-medium truncate">{analysis.title}</p>

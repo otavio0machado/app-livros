@@ -101,40 +101,40 @@ export default function AdminDashboard() {
   return (
     <div>
       {/* Stats */}
-      <div className="grid grid-cols-3 gap-3 mb-6">
-        <div className="bg-white rounded-2xl p-4 border border-gray-100">
-          <p className="text-2xl font-bold text-gray-900">{books.length}</p>
-          <p className="text-xs text-gray-500">Total</p>
+      <div className="grid grid-cols-3 gap-2 sm:gap-3 mb-4 sm:mb-6">
+        <div className="bg-white rounded-xl sm:rounded-2xl p-3 sm:p-4 border border-gray-100">
+          <p className="text-xl sm:text-2xl font-bold text-gray-900">{books.length}</p>
+          <p className="text-[10px] sm:text-xs text-gray-500">Total</p>
         </div>
-        <div className="bg-white rounded-2xl p-4 border border-gray-100">
-          <p className="text-2xl font-bold text-green-600">{available}</p>
-          <p className="text-xs text-gray-500">Disponíveis</p>
+        <div className="bg-white rounded-xl sm:rounded-2xl p-3 sm:p-4 border border-gray-100">
+          <p className="text-xl sm:text-2xl font-bold text-green-600">{available}</p>
+          <p className="text-[10px] sm:text-xs text-gray-500">Disponiveis</p>
         </div>
-        <div className="bg-white rounded-2xl p-4 border border-gray-100">
-          <p className="text-2xl font-bold text-gray-400">{sold}</p>
-          <p className="text-xs text-gray-500">Vendidos</p>
+        <div className="bg-white rounded-xl sm:rounded-2xl p-3 sm:p-4 border border-gray-100">
+          <p className="text-xl sm:text-2xl font-bold text-gray-400">{sold}</p>
+          <p className="text-[10px] sm:text-xs text-gray-500">Vendidos</p>
         </div>
       </div>
 
-      {/* Add button */}
-      <div className="flex justify-between items-center mb-4">
+      {/* Add buttons */}
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 mb-4">
         <h2 className="text-lg font-semibold text-gray-900">Seus livros</h2>
-        <div className="flex gap-2">
+        <div className="flex gap-2 w-full sm:w-auto overflow-x-auto scrollbar-none">
           <Link
             href="/admin/colecao"
-            className="px-4 py-2 bg-purple-100 text-purple-700 rounded-xl text-sm font-medium hover:bg-purple-200 transition"
+            className="px-3 sm:px-4 py-2 bg-purple-100 text-purple-700 rounded-xl text-xs sm:text-sm font-medium hover:bg-purple-200 transition whitespace-nowrap flex-shrink-0"
           >
-            + Coleção
+            + Colecao
           </Link>
           <Link
             href="/admin/lote"
-            className="px-4 py-2 bg-warm-100 text-warm-700 rounded-xl text-sm font-medium hover:bg-warm-200 transition"
+            className="px-3 sm:px-4 py-2 bg-warm-100 text-warm-700 rounded-xl text-xs sm:text-sm font-medium hover:bg-warm-200 transition whitespace-nowrap flex-shrink-0"
           >
             + Lote
           </Link>
           <Link
             href="/admin/novo"
-            className="px-4 py-2 bg-blue-600 text-white rounded-xl text-sm font-medium hover:bg-blue-700 transition"
+            className="px-3 sm:px-4 py-2 bg-blue-600 text-white rounded-xl text-xs sm:text-sm font-medium hover:bg-blue-700 transition whitespace-nowrap flex-shrink-0"
           >
             + Novo livro
           </Link>
@@ -186,13 +186,13 @@ export default function AdminDashboard() {
                   </div>
                 </div>
 
-                <div className="flex items-center gap-1 flex-shrink-0">
+                <div className="flex items-center gap-0.5 sm:gap-1 flex-shrink-0">
                   <button
                     onClick={() => toggleStatus(book.id, book.status)}
-                    className="p-2 text-gray-400 hover:text-green-600 hover:bg-green-50 rounded-lg transition"
+                    className="p-2.5 sm:p-2 text-gray-400 hover:text-green-600 hover:bg-green-50 rounded-lg transition"
                     title={book.status === 'available' ? 'Marcar como vendido' : 'Marcar como disponível'}
                   >
-                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <svg className="w-5 h-5 sm:w-4 sm:h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
                     </svg>
                   </button>
@@ -205,8 +205,8 @@ export default function AdminDashboard() {
                           downloadFile(item.url, `${book.title}-${i + 1}.${ext}`);
                         });
                       }}
-                      className="p-2 text-gray-400 hover:text-navy-600 hover:bg-navy-50 rounded-lg transition"
-                      title="Baixar mídias"
+                      className="p-2.5 sm:p-2 text-gray-400 hover:text-navy-600 hover:bg-navy-50 rounded-lg transition hidden sm:block"
+                      title="Baixar midias"
                     >
                       <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
@@ -218,7 +218,7 @@ export default function AdminDashboard() {
                       setShopeeBookId(shopeeBookId === book.id ? null : book.id);
                       setShopeeCopied(false);
                     }}
-                    className={`p-2 rounded-lg transition ${shopeeBookId === book.id ? 'text-[#EE4D2D] bg-orange-50' : 'text-gray-400 hover:text-[#EE4D2D] hover:bg-orange-50'}`}
+                    className={`p-2.5 sm:p-2 rounded-lg transition hidden sm:block ${shopeeBookId === book.id ? 'text-[#EE4D2D] bg-orange-50' : 'text-gray-400 hover:text-[#EE4D2D] hover:bg-orange-50'}`}
                     title="Etiqueta Shopee"
                   >
                     <svg className="w-4 h-4" viewBox="0 0 24 24" fill="currentColor">
@@ -227,17 +227,17 @@ export default function AdminDashboard() {
                   </button>
                   <Link
                     href={`/admin/editar/${book.id}`}
-                    className="p-2 text-gray-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition"
+                    className="p-2.5 sm:p-2 text-gray-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition"
                   >
-                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <svg className="w-5 h-5 sm:w-4 sm:h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
                     </svg>
                   </Link>
                   <button
                     onClick={() => handleDelete(book.id)}
-                    className="p-2 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition"
+                    className="p-2.5 sm:p-2 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition"
                   >
-                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <svg className="w-5 h-5 sm:w-4 sm:h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
                     </svg>
                   </button>

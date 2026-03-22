@@ -143,7 +143,7 @@ export default function MediaUploader({ items, onChange }: MediaUploaderProps) {
     <div>
       {/* Grid of uploaded items */}
       {items.length > 0 && (
-        <div className="grid grid-cols-3 sm:grid-cols-4 gap-2 mb-3">
+        <div className="grid grid-cols-3 sm:grid-cols-4 gap-2.5 sm:gap-2 mb-3">
           {items.map((item, i) => (
             <div key={i} className="relative aspect-square rounded-xl overflow-hidden bg-warm-100 border border-warm-200">
               {item.type === 'image' ? (
@@ -163,7 +163,7 @@ export default function MediaUploader({ items, onChange }: MediaUploaderProps) {
               <button
                 type="button"
                 onClick={() => removeItem(i)}
-                className="absolute top-1 right-1 w-5 h-5 bg-black/60 text-white rounded-full flex items-center justify-center text-xs hover:bg-black/80"
+                className="absolute top-1 right-1 w-6 h-6 bg-black/60 text-white rounded-full flex items-center justify-center text-sm hover:bg-black/80"
               >
                 &times;
               </button>

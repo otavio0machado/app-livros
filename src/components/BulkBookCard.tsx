@@ -97,7 +97,7 @@ export default function BulkBookCard({
 
           {/* Photos grid */}
           {hasPhotos && (
-            <div className="grid grid-cols-4 sm:grid-cols-6 gap-2 mb-3">
+            <div className="grid grid-cols-3 sm:grid-cols-6 gap-2.5 sm:gap-2 mb-3">
               {imagePreviewUrls.map((url, i) => (
                 <div key={i} className="relative aspect-square rounded-lg overflow-hidden bg-warm-100">
                   {/* eslint-disable-next-line @next/next/no-img-element */}

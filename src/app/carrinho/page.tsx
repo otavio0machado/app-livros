@@ -58,17 +58,17 @@ export default function CarrinhoPage() {
                   </div>
 
                   <div className="flex-1 min-w-0">
-                    <h3 className="font-medium text-warm-800 text-sm truncate">{item.title}</h3>
+                    <h3 className="font-medium text-warm-800 text-sm line-clamp-2">{item.title}</h3>
                     <p className="text-xs text-warm-400 truncate">{item.author}</p>
                     <p className="text-sm font-semibold text-warm-900 mt-1">R$ {formatPrice(item.price_cents)}</p>
                   </div>
 
                   <button
                     onClick={() => removeItem(item.bookId)}
-                    className="p-2 text-warm-400 hover:text-red-500 transition-colors flex-shrink-0"
+                    className="p-2.5 text-warm-400 hover:text-red-500 hover:bg-red-50 rounded-lg transition-colors flex-shrink-0 min-w-[36px] min-h-[36px] flex items-center justify-center"
                     aria-label="Remover item"
                   >
-                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
                     </svg>
                   </button>

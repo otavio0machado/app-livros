@@ -326,7 +326,7 @@ export default function BookForm({ initialData, onSubmit, submitLabel = 'Salvar'
       </div>
 
       {/* Edition, Cover, Year */}
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+      <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 sm:gap-4">
         <div>
           <label className="block text-sm font-medium text-warm-700 mb-1">Tipo de Edição</label>
           <input type="text" value={form.edition_type || ''} onChange={(e) => updateField('edition_type', e.target.value)} placeholder="Ex: 1ª Edição" className="w-full px-4 py-3 rounded-xl border border-warm-200 focus:ring-2 focus:ring-navy-200 outline-none transition text-warm-900" />

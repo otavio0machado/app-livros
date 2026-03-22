@@ -424,18 +424,18 @@ export default function LotePage() {
       {/* Review stats */}
       {phase === 'review' && analyzingCount === 0 && (
         <div className="mt-4">
-          <div className="grid grid-cols-3 gap-3 mb-4">
-            <div className="bg-white rounded-2xl p-3 border border-gray-100 text-center">
-              <p className="text-xl font-bold text-green-600">{readyCount}</p>
-              <p className="text-xs text-gray-500">Prontos</p>
+          <div className="grid grid-cols-3 gap-2 sm:gap-3 mb-4">
+            <div className="bg-white rounded-xl sm:rounded-2xl p-2.5 sm:p-3 border border-gray-100 text-center">
+              <p className="text-lg sm:text-xl font-bold text-green-600">{readyCount}</p>
+              <p className="text-[10px] sm:text-xs text-gray-500">Prontos</p>
             </div>
-            <div className="bg-white rounded-2xl p-3 border border-gray-100 text-center">
-              <p className="text-xl font-bold text-blue-600">{publishedCount}</p>
-              <p className="text-xs text-gray-500">Publicados</p>
+            <div className="bg-white rounded-xl sm:rounded-2xl p-2.5 sm:p-3 border border-gray-100 text-center">
+              <p className="text-lg sm:text-xl font-bold text-blue-600">{publishedCount}</p>
+              <p className="text-[10px] sm:text-xs text-gray-500">Publicados</p>
             </div>
-            <div className="bg-white rounded-2xl p-3 border border-gray-100 text-center">
-              <p className="text-xl font-bold text-red-500">{errorCount}</p>
-              <p className="text-xs text-gray-500">Erros</p>
+            <div className="bg-white rounded-xl sm:rounded-2xl p-2.5 sm:p-3 border border-gray-100 text-center">
+              <p className="text-lg sm:text-xl font-bold text-red-500">{errorCount}</p>
+              <p className="text-[10px] sm:text-xs text-gray-500">Erros</p>
             </div>
           </div>
 
