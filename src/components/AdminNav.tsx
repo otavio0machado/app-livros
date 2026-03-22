@@ -15,6 +15,7 @@ export default function AdminNav() {
   const links = [
     { href: '/admin', label: 'Dashboard' },
     { href: '/admin/novo', label: 'Novo' },
+    { href: '/admin/lote', label: 'Lote' },
   ];
 
   return (

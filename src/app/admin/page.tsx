@@ -119,12 +119,20 @@ export default function AdminDashboard() {
       {/* Add button */}
       <div className="flex justify-between items-center mb-4">
         <h2 className="text-lg font-semibold text-gray-900">Seus livros</h2>
-        <Link
-          href="/admin/novo"
-          className="px-4 py-2 bg-blue-600 text-white rounded-xl text-sm font-medium hover:bg-blue-700 transition"
-        >
-          + Novo livro
-        </Link>
+        <div className="flex gap-2">
+          <Link
+            href="/admin/lote"
+            className="px-4 py-2 bg-warm-100 text-warm-700 rounded-xl text-sm font-medium hover:bg-warm-200 transition"
+          >
+            + Lote
+          </Link>
+          <Link
+            href="/admin/novo"
+            className="px-4 py-2 bg-blue-600 text-white rounded-xl text-sm font-medium hover:bg-blue-700 transition"
+          >
+            + Novo livro
+          </Link>
+        </div>
       </div>
 
       {/* Book list */}
