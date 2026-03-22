@@ -121,6 +121,12 @@ export default function AdminDashboard() {
         <h2 className="text-lg font-semibold text-gray-900">Seus livros</h2>
         <div className="flex gap-2">
           <Link
+            href="/admin/colecao"
+            className="px-4 py-2 bg-purple-100 text-purple-700 rounded-xl text-sm font-medium hover:bg-purple-200 transition"
+          >
+            + Coleção
+          </Link>
+          <Link
             href="/admin/lote"
             className="px-4 py-2 bg-warm-100 text-warm-700 rounded-xl text-sm font-medium hover:bg-warm-200 transition"
           >

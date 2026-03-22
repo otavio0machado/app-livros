@@ -7,13 +7,12 @@ import type { MediaItem } from '@/types';
 interface MediaUploaderProps {
   items: MediaItem[];
   onChange: (items: MediaItem[]) => void;
-  onFirstImageBase64?: (base64: string, mimeType: string) => void;
 }
 
 const MAX_IMAGES = 9;
 const MAX_VIDEOS = 1;
 
-export default function MediaUploader({ items, onChange, onFirstImageBase64 }: MediaUploaderProps) {
+export default function MediaUploader({ items, onChange }: MediaUploaderProps) {
   const [uploading, setUploading] = useState(false);
   const [error, setError] = useState('');
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -66,12 +65,10 @@ export default function MediaUploader({ items, onChange, onFirstImageBase64 }: M
   async function uploadFile(file: File): Promise<MediaItem | null> {
     const isVideo = file.type.startsWith('video/');
     let fileToUpload: Blob = file;
-    let base64ForAI: string | null = null;
 
     if (!isVideo) {
       const resized = await resizeImage(file);
       fileToUpload = resized.blob;
-      base64ForAI = resized.base64;
     }
 
     const formData = new FormData();
@@ -84,10 +81,6 @@ export default function MediaUploader({ items, onChange, onFirstImageBase64 }: M
     }
 
     const { path, url, type } = await res.json();
-
-    if (base64ForAI && onFirstImageBase64 && items.filter((i) => i.type === 'image').length === 0) {
-      onFirstImageBase64(base64ForAI, 'image/jpeg');
-    }
 
     return { url, type, path };
   }

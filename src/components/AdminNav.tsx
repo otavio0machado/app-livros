@@ -16,6 +16,7 @@ export default function AdminNav() {
     { href: '/admin', label: 'Dashboard' },
     { href: '/admin/novo', label: 'Novo' },
     { href: '/admin/lote', label: 'Lote' },
+    { href: '/admin/colecao', label: 'Coleção' },
   ];
 
   return (

@@ -41,6 +41,11 @@ export interface Book {
   media: MediaItem[];
   subject: string;
   course_origin: string;
+  collection_id: string | null;
+  collection_name: string | null;
+  collection_volume: number | null;
+  collection_total_volumes: number | null;
+  collection_discount_pct: number | null;
   status: 'available' | 'sold' | 'reserved';
   created_at: string;
   updated_at: string;
@@ -54,6 +59,34 @@ export interface CartItem {
   photo_url: string;
   condition_detail: string;
   type: string;
+}
+
+export interface GeminiCollectionVolume {
+  title: string;
+  author: string;
+  publisher: string;
+  isbn: string;
+  volume_number: number;
+  year: string;
+  description: string;
+  category: string;
+  language: string;
+  edition_type: string;
+  cover_type: string;
+  weight_kg: number;
+  suggested_price_cents: number;
+  width_cm: number;
+  length_cm: number;
+  height_cm: number;
+  subject: string;
+  course_origin: string;
+}
+
+export interface GeminiCollectionAnalysis {
+  collection_name: string;
+  total_volumes: number;
+  type: 'Livro' | 'Apostila';
+  volumes: GeminiCollectionVolume[];
 }
 
 export interface GeminiAnalysis {

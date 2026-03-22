@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 import { isAuthenticated } from '@/lib/auth';
-import { analyzeBookImage } from '@/lib/gemini';
+import { analyzeCollectionImage } from '@/lib/gemini';
 
 export async function POST(request: Request) {
   const authenticated = await isAuthenticated();
@@ -18,13 +18,13 @@ export async function POST(request: Request) {
       );
     }
 
-    const analysis = await analyzeBookImage(imageBase64, mimeType, condition);
+    const analysis = await analyzeCollectionImage(imageBase64, mimeType, condition);
 
     return NextResponse.json(analysis);
   } catch (error) {
-    console.error('Erro na análise:', error);
+    console.error('Erro na análise de coleção:', error);
     return NextResponse.json(
-      { error: 'Erro ao analisar imagem com IA' },
+      { error: 'Erro ao analisar coleção com IA' },
       { status: 500 }
     );
   }

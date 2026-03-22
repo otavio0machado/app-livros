@@ -4,17 +4,8 @@ import { useState } from 'react';
 import type { Book, GeminiAnalysis, MediaItem } from '@/types';
 import MediaUploader from './MediaUploader';
 import AiAnalysisPanel from './AiAnalysisPanel';
+import ConditionSelector from './ConditionSelector';
 import ShopeeLabelPreview from './ShopeeLabelPreview';
-
-const CONDITIONS = [
-  'Novo',
-  'Usado - Excelente estado, como novo.',
-  'Usado - Contém marcas de uso.',
-  'Usado - Contém marcas de uso e pode conter poucos escritos ou marcações.',
-  'Usado - Pode conter poucos escritos ou marcações.',
-  'Usado - Contém marcas de uso, bastante marcações, escritos e/ou exercícios resolvidos.',
-  'Usado - Contém bastante marcações, escritos e/ou exercícios resolvidos.',
-];
 
 const CATEGORIES = [
   'Ficção', 'Não-Ficção', 'Infantil', 'Acadêmico', 'Vestibular',
@@ -91,16 +82,39 @@ export default function BookForm({ initialData, onSubmit, submitLabel = 'Salvar'
     setForm((prev) => ({ ...prev, [field]: value }));
   }
 
-  async function handleFirstImageForAI(base64: string, mimeType: string) {
+  async function handleManualAnalysis() {
+    const images = media.filter((m) => m.type === 'image');
+    if (images.length === 0) {
+      alert('Adicione pelo menos uma foto antes de analisar.');
+      return;
+    }
+    if (!form.condition_detail) {
+      alert('Selecione a condição do produto antes de analisar.');
+      return;
+    }
+
     setAnalyzing(true);
     setAnalysisError('');
     setAnalysis(null);
 
     try {
+      // Fetch the first image and convert to base64
+      const response = await fetch(images[0].url);
+      const blob = await response.blob();
+      const base64 = await new Promise<string>((resolve) => {
+        const reader = new FileReader();
+        reader.onload = () => resolve((reader.result as string).split(',')[1]);
+        reader.readAsDataURL(blob);
+      });
+
       const res = await fetch('/api/analyze', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ imageBase64: base64, mimeType }),
+        body: JSON.stringify({
+          imageBase64: base64,
+          mimeType: 'image/jpeg',
+          condition: form.condition_detail,
+        }),
       });
       if (!res.ok) throw new Error('Erro na análise');
       const result: GeminiAnalysis = await res.json();
@@ -166,6 +180,8 @@ export default function BookForm({ initialData, onSubmit, submitLabel = 'Salvar'
 
   const isApostila = form.type === 'Apostila';
   const formAsBook = { ...form, media, photo_url: media[0]?.url || '' } as Book;
+  const hasImages = media.filter((m) => m.type === 'image').length > 0;
+  const canAnalyze = hasImages && !!form.condition_detail;
 
   return (
     <form onSubmit={handleSubmit} className="space-y-6">
@@ -175,11 +191,59 @@ export default function BookForm({ initialData, onSubmit, submitLabel = 'Salvar'
         <MediaUploader
           items={media}
           onChange={setMedia}
-          onFirstImageBase64={handleFirstImageForAI}
         />
       </div>
 
-      {/* AI Analysis */}
+      {/* Condition (REQUIRED) */}
+      <ConditionSelector
+        value={form.condition_detail || ''}
+        onChange={(v) => updateField('condition_detail', v)}
+        required
+      />
+
+      {/* Condition Notes (Optional) */}
+      <div>
+        <label className="block text-sm font-medium text-warm-700 mb-1">
+          Observações sobre o estado (opcional)
+        </label>
+        <textarea
+          value={form.condition_notes || ''}
+          onChange={(e) => updateField('condition_notes', e.target.value)}
+          placeholder="Ex: Falta a contracapa, páginas amareladas, autografado..."
+          rows={2}
+          className="w-full px-4 py-3 rounded-xl border border-warm-200 focus:ring-2 focus:ring-navy-200 focus:border-navy-200 outline-none transition text-warm-900 resize-none"
+        />
+      </div>
+
+      {/* Manual AI Analysis Button */}
+      <div>
+        <button
+          type="button"
+          onClick={handleManualAnalysis}
+          disabled={!canAnalyze || analyzing}
+          className={`w-full py-3 rounded-xl text-sm font-medium transition flex items-center justify-center gap-2 ${
+            canAnalyze && !analyzing
+              ? 'bg-blue-600 text-white hover:bg-blue-700'
+              : 'bg-warm-100 text-warm-400 cursor-not-allowed'
+          }`}
+        >
+          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
+          </svg>
+          {analyzing ? 'Analisando...' : 'Analisar com IA'}
+        </button>
+        {!canAnalyze && !analyzing && (
+          <p className="text-xs text-warm-400 mt-1 text-center">
+            {!hasImages && !form.condition_detail
+              ? 'Adicione fotos e selecione a condição para analisar'
+              : !hasImages
+                ? 'Adicione pelo menos uma foto para analisar'
+                : 'Selecione a condição do produto para analisar'}
+          </p>
+        )}
+      </div>
+
+      {/* AI Analysis Results */}
       <AiAnalysisPanel
         loading={analyzing}
         analysis={analysis}
@@ -206,49 +270,6 @@ export default function BookForm({ initialData, onSubmit, submitLabel = 'Salvar'
             </button>
           ))}
         </div>
-      </div>
-
-      {/* Condition (REQUIRED) */}
-      <div>
-        <label className="block text-sm font-medium text-warm-700 mb-2">
-          Condição do produto <span className="text-red-500">*</span>
-        </label>
-        <div className="space-y-2">
-          {CONDITIONS.map((c) => (
-            <label
-              key={c}
-              className={`flex items-center gap-3 p-3 rounded-xl border cursor-pointer transition ${
-                form.condition_detail === c
-                  ? 'border-navy-500 bg-navy-50'
-                  : 'border-warm-200 hover:border-warm-300'
-              }`}
-            >
-              <input
-                type="radio"
-                name="condition_detail"
-                value={c}
-                checked={form.condition_detail === c}
-                onChange={(e) => updateField('condition_detail', e.target.value)}
-                className="w-4 h-4 text-navy-700"
-              />
-              <span className="text-sm text-warm-700">{c}</span>
-            </label>
-          ))}
-        </div>
-      </div>
-
-      {/* Condition Notes (Optional) */}
-      <div>
-        <label className="block text-sm font-medium text-warm-700 mb-1">
-          Observações sobre o estado (opcional)
-        </label>
-        <textarea
-          value={form.condition_notes || ''}
-          onChange={(e) => updateField('condition_notes', e.target.value)}
-          placeholder="Ex: Falta a contracapa, páginas amareladas, autografado..."
-          rows={2}
-          className="w-full px-4 py-3 rounded-xl border border-warm-200 focus:ring-2 focus:ring-navy-200 focus:border-navy-200 outline-none transition text-warm-900 resize-none"
-        />
       </div>
 
       {/* Basic Info */}

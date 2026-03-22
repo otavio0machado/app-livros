@@ -4,6 +4,7 @@ import { useState, useRef, useCallback } from 'react';
 import Link from 'next/link';
 import type { Book, GeminiAnalysis, MediaItem } from '@/types';
 import BulkBookCard, { type BulkDraft } from '@/components/BulkBookCard';
+import ConditionSelector from '@/components/ConditionSelector';
 import {
   resizeImageForAnalysis,
   analysisToFormData,
@@ -16,6 +17,7 @@ function generateId() {
 
 export default function LotePage() {
   const [drafts, setDrafts] = useState<BulkDraft[]>([]);
+  const [batchCondition, setBatchCondition] = useState('');
   const [phase, setPhase] = useState<'select' | 'analyzing' | 'review'>('select');
   const limiterRef = useRef(createConcurrencyLimiter(3));
 
@@ -132,6 +134,7 @@ export default function LotePage() {
               body: JSON.stringify({
                 imageBase64: draft.imageBase64,
                 mimeType: 'image/jpeg',
+                condition: batchCondition,
               }),
             });
 
@@ -190,7 +193,7 @@ export default function LotePage() {
       const res = await fetch('/api/analyze', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ imageBase64: base64, mimeType: 'image/jpeg' }),
+        body: JSON.stringify({ imageBase64: base64, mimeType: 'image/jpeg', condition: batchCondition }),
       });
 
       if (!res.ok) throw new Error('Erro na analise da IA');
@@ -305,7 +308,7 @@ export default function LotePage() {
   const publishedCount = drafts.filter((d) => d.status === 'published').length;
   const readyCount = drafts.filter((d) => d.status === 'analyzed').length;
   const analyzingCount = drafts.filter((d) => d.status === 'analyzing').length;
-  const canAnalyze = phase === 'select' && withPhotos > 0;
+  const canAnalyze = phase === 'select' && withPhotos > 0 && !!batchCondition;
 
   // ---------- Render ----------
 
@@ -357,8 +360,19 @@ export default function LotePage() {
         </button>
       )}
 
+      {/* Condition selector for the batch */}
+      {phase === 'select' && withPhotos > 0 && (
+        <div className="mt-4 bg-white rounded-2xl border border-gray-100 p-4">
+          <ConditionSelector
+            value={batchCondition}
+            onChange={setBatchCondition}
+            required
+          />
+        </div>
+      )}
+
       {/* Action bar */}
-      {canAnalyze && (
+      {phase === 'select' && withPhotos > 0 && (
         <div className="mt-4 flex items-center justify-between bg-navy-50 rounded-2xl p-4">
           <p className="text-sm text-navy-700">
             <span className="font-semibold">{withPhotos}</span> {withPhotos === 1 ? 'livro' : 'livros'} com fotos
@@ -370,7 +384,12 @@ export default function LotePage() {
           </p>
           <button
             onClick={analyzeAll}
-            className="px-5 py-2.5 bg-navy-700 text-white rounded-xl text-sm font-medium hover:bg-navy-600 transition"
+            disabled={!canAnalyze}
+            className={`px-5 py-2.5 rounded-xl text-sm font-medium transition ${
+              canAnalyze
+                ? 'bg-navy-700 text-white hover:bg-navy-600'
+                : 'bg-warm-200 text-warm-400 cursor-not-allowed'
+            }`}
           >
             Analisar todos com IA
           </button>
