@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import type { Book, MediaItem } from '@/types';
+import { generateShopeeLabel, formatShopeeForCopy } from '@/lib/shopee';
 
 function formatPrice(cents: number): string {
   return `R$ ${(cents / 100).toFixed(2).replace('.', ',')}`;
@@ -25,6 +26,12 @@ async function downloadFile(url: string, filename: string) {
   URL.revokeObjectURL(a.href);
 }
 
+async function copyShopeeLabel(book: Book) {
+  const label = generateShopeeLabel(book);
+  const text = formatShopeeForCopy(label);
+  await navigator.clipboard.writeText(text);
+}
+
 const STATUS_LABELS: Record<string, { label: string; color: string }> = {
   available: { label: 'Disponível', color: 'bg-green-100 text-green-700' },
   sold: { label: 'Vendido', color: 'bg-gray-100 text-gray-500' },
@@ -34,6 +41,8 @@ const STATUS_LABELS: Record<string, { label: string; color: string }> = {
 export default function AdminDashboard() {
   const [books, setBooks] = useState<Book[]>([]);
   const [loading, setLoading] = useState(true);
+  const [shopeeBookId, setShopeeBookId] = useState<number | null>(null);
+  const [shopeeCopied, setShopeeCopied] = useState(false);
 
   useEffect(() => {
     fetchBooks();
@@ -131,10 +140,8 @@ export default function AdminDashboard() {
           {books.map((book) => {
             const statusInfo = STATUS_LABELS[book.status] || STATUS_LABELS.available;
             return (
-              <div
-                key={book.id}
-                className="bg-white rounded-xl border border-gray-100 p-3 flex items-center gap-3"
-              >
+            <div key={book.id} className="bg-white rounded-xl border border-gray-100 overflow-hidden">
+              <div className="p-3 flex items-center gap-3">
                 <div className="w-14 h-14 rounded-lg bg-gray-100 overflow-hidden flex-shrink-0 relative">
                   {getMedia(book)[0]?.url ? (
                     <Image src={getMedia(book)[0].url} alt={book.title} fill className="object-cover" sizes="56px" />
@@ -192,6 +199,18 @@ export default function AdminDashboard() {
                       </svg>
                     </button>
                   )}
+                  <button
+                    onClick={() => {
+                      setShopeeBookId(shopeeBookId === book.id ? null : book.id);
+                      setShopeeCopied(false);
+                    }}
+                    className={`p-2 rounded-lg transition ${shopeeBookId === book.id ? 'text-[#EE4D2D] bg-orange-50' : 'text-gray-400 hover:text-[#EE4D2D] hover:bg-orange-50'}`}
+                    title="Etiqueta Shopee"
+                  >
+                    <svg className="w-4 h-4" viewBox="0 0 24 24" fill="currentColor">
+                      <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1.5 4.5c.83 0 1.5.67 1.5 1.5s-.67 1.5-1.5 1.5S9 8.83 9 8s.67-1.5 1.5-1.5zm4.5 0c.83 0 1.5.67 1.5 1.5s-.67 1.5-1.5 1.5-1.5-.67-1.5-1.5.67-1.5 1.5-1.5zM12 18c-2.33 0-4.31-1.46-5.11-3.5h10.22c-.8 2.04-2.78 3.5-5.11 3.5z"/>
+                    </svg>
+                  </button>
                   <Link
                     href={`/admin/editar/${book.id}`}
                     className="p-2 text-gray-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition"
@@ -210,6 +229,50 @@ export default function AdminDashboard() {
                   </button>
                 </div>
               </div>
+
+              {/* Shopee Label Panel */}
+              {shopeeBookId === book.id && (
+                <div className="bg-orange-50 border-t border-orange-200 p-4 rounded-b-xl">
+                  <div className="flex items-center justify-between mb-3">
+                    <h4 className="text-sm font-semibold text-[#EE4D2D]">Etiqueta Shopee</h4>
+                    <div className="flex gap-2">
+                      <button
+                        onClick={async () => {
+                          await copyShopeeLabel(book);
+                          setShopeeCopied(true);
+                          setTimeout(() => setShopeeCopied(false), 2000);
+                        }}
+                        className={`px-3 py-1.5 rounded-lg text-xs font-medium transition ${
+                          shopeeCopied
+                            ? 'bg-green-500 text-white'
+                            : 'bg-[#EE4D2D] text-white hover:bg-[#d4431f]'
+                        }`}
+                      >
+                        {shopeeCopied ? 'Copiado!' : 'Copiar tudo'}
+                      </button>
+                      <button
+                        onClick={() => {
+                          const label = generateShopeeLabel(book);
+                          const text = formatShopeeForCopy(label);
+                          const blob = new Blob([text], { type: 'text/plain' });
+                          const a = document.createElement('a');
+                          a.href = URL.createObjectURL(blob);
+                          a.download = `shopee-${book.title.slice(0, 30)}.txt`;
+                          a.click();
+                          URL.revokeObjectURL(a.href);
+                        }}
+                        className="px-3 py-1.5 bg-white border border-orange-200 text-[#EE4D2D] rounded-lg text-xs font-medium hover:bg-orange-100 transition"
+                      >
+                        Baixar .txt
+                      </button>
+                    </div>
+                  </div>
+                  <pre className="text-xs text-warm-700 bg-white rounded-lg p-3 overflow-x-auto whitespace-pre-wrap border border-orange-100 max-h-60 overflow-y-auto">
+                    {formatShopeeForCopy(generateShopeeLabel(book))}
+                  </pre>
+                </div>
+              )}
+            </div>
             );
           })}
         </div>
