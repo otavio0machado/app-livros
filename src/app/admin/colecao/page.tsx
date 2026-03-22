@@ -202,10 +202,12 @@ export default function ColecaoPage() {
   async function analyzeAddAndCollect() {
     const limit = limiterRef.current;
 
-    // Step 1: Analyze each individual book
+    // Step 1: Analyze each individual book, track results locally
     const toAnalyze = bookSlots.filter(
       (s) => (s.status === 'pending' || s.status === 'error') && s.media.length > 0 && s.condition
     );
+
+    const results: { id: string; formData: Partial<Book>; media: MediaItem[] }[] = [];
 
     await Promise.allSettled(
       toAnalyze.map((slot) =>
@@ -230,6 +232,8 @@ export default function ColecaoPage() {
             const formData = analysisToFormData(analysis);
             formData.condition_detail = slot.condition;
 
+            results.push({ id: slot.id, formData, media: slot.media });
+
             setBookSlots((prev) =>
               prev.map((s) => (s.id === slot.id ? { ...s, status: 'analyzed' as const, formData } : s))
             );
@@ -246,50 +250,43 @@ export default function ColecaoPage() {
       )
     );
 
-    // Step 2: Analyze the collection using the analyzed books
-    // We need to read the latest state
-    setBookSlots((currentSlots) => {
-      const analyzedSlots = currentSlots.filter((s) => s.status === 'analyzed');
-      if (analyzedSlots.length === 0) return currentSlots;
+    // Step 2: Analyze the collection using the results we tracked
+    if (results.length === 0) {
+      setAnalysisError('Nenhum livro foi analisado com sucesso');
+      setPhase('setup');
+      return;
+    }
 
-      // Kick off collection analysis (async, outside setState)
-      (async () => {
-        try {
-          const base64 = await imageUrlToBase64(collMedia.filter((m) => m.type === 'image')[0].url);
-          const booksData = analyzedSlots.map((s) => ({
-            title: s.formData.title || '',
-            author: s.formData.author || '',
-            price_cents: s.formData.price_cents || 0,
-          }));
+    const base64 = await imageUrlToBase64(collMedia.filter((m) => m.type === 'image')[0].url);
+    const booksData = results.map((r) => ({
+      title: r.formData.title || '',
+      author: r.formData.author || '',
+      price_cents: r.formData.price_cents || 0,
+    }));
 
-          const res = await fetch('/api/analyze-collection', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-              imageBase64: base64,
-              mimeType: 'image/jpeg',
-              condition: collCondition,
-              books: booksData,
-              discountPct,
-            }),
-          });
-
-          if (!res.ok) throw new Error('Erro na analise da colecao');
-          const analysis: GeminiCollectionAnalysis = await res.json();
-
-          // Build collection media: collection photos + all individual book photos
-          const bookPhotos: MediaItem[] = analyzedSlots.flatMap((s) => s.media);
-          setCollFinalMedia([...collMedia, ...bookPhotos]);
-          buildCollectionFormData(analysis, undefined, analyzedSlots);
-          setPhase('review');
-        } catch (err) {
-          setAnalysisError(err instanceof Error ? err.message : 'Erro na colecao');
-          setPhase('review'); // Still show individual books for review
-        }
-      })();
-
-      return currentSlots;
+    const res = await fetch('/api/analyze-collection', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        imageBase64: base64,
+        mimeType: 'image/jpeg',
+        condition: collCondition,
+        books: booksData,
+        discountPct,
+      }),
     });
+
+    if (!res.ok) throw new Error('Erro na analise da colecao');
+    const analysis: GeminiCollectionAnalysis = await res.json();
+
+    // Build collection media: collection photos + all individual book photos
+    const bookPhotos: MediaItem[] = results.flatMap((r) => r.media);
+    setCollFinalMedia([...collMedia, ...bookPhotos]);
+    buildCollectionFormData(analysis, undefined, results.map((r) => ({
+      ...bookSlots.find((s) => s.id === r.id)!,
+      formData: r.formData,
+    })));
+    setPhase('review');
   }
 
   function buildCollectionFormData(
