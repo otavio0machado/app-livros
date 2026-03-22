@@ -17,50 +17,79 @@ function generateId() {
 export default function LotePage() {
   const [drafts, setDrafts] = useState<BulkDraft[]>([]);
   const [phase, setPhase] = useState<'select' | 'analyzing' | 'review'>('select');
-  const fileInputRef = useRef<HTMLInputElement>(null);
   const limiterRef = useRef(createConcurrencyLimiter(3));
 
-  // ---------- File selection ----------
+  // ---------- Add empty book slot ----------
 
-  async function handleFiles(files: FileList) {
-    const imageFiles = Array.from(files).filter((f) => f.type.startsWith('image/'));
-    if (imageFiles.length === 0) return;
+  function addBookSlot() {
+    setDrafts((prev) => [
+      ...prev,
+      {
+        id: generateId(),
+        imageFiles: [],
+        imagePreviewUrls: [],
+        imageBase64: '',
+        status: 'pending',
+        error: '',
+        formData: {},
+        uploadedMedia: [],
+      },
+    ]);
+  }
 
-    const newDrafts: BulkDraft[] = await Promise.all(
-      imageFiles.map(async (file) => {
-        const { base64, blob: _blob } = await resizeImageForAnalysis(file);
+  // ---------- Add photos to a specific book ----------
+
+  const addPhotosToBook = useCallback(async (bookId: string, files: File[]) => {
+    const newPreviewUrls = files.map((f) => URL.createObjectURL(f));
+
+    setDrafts((prev) =>
+      prev.map((d) => {
+        if (d.id !== bookId) return d;
         return {
-          id: generateId(),
-          imageFile: file,
-          imagePreviewUrl: URL.createObjectURL(file),
-          imageBase64: base64,
-          status: 'pending' as const,
-          error: '',
-          formData: {},
-          uploadedMedia: [],
+          ...d,
+          imageFiles: [...d.imageFiles, ...files],
+          imagePreviewUrls: [...d.imagePreviewUrls, ...newPreviewUrls],
         };
       })
     );
 
-    setDrafts((prev) => [...prev, ...newDrafts]);
-  }
-
-  function handleInputChange(e: React.ChangeEvent<HTMLInputElement>) {
-    if (e.target.files && e.target.files.length > 0) {
-      handleFiles(e.target.files);
+    // Generate base64 from the first image if not yet set
+    const draft = drafts.find((d) => d.id === bookId);
+    const isFirstImage = !draft || draft.imageFiles.length === 0;
+    if (isFirstImage && files[0]) {
+      const { base64 } = await resizeImageForAnalysis(files[0]);
+      setDrafts((prev) =>
+        prev.map((d) => (d.id === bookId ? { ...d, imageBase64: base64 } : d))
+      );
     }
-    e.target.value = '';
-  }
+  }, [drafts]);
 
-  function handleDrop(e: React.DragEvent) {
-    e.preventDefault();
-    if (e.dataTransfer.files.length > 0) handleFiles(e.dataTransfer.files);
-  }
+  // ---------- Remove a photo from a book ----------
+
+  const removePhotoFromBook = useCallback((bookId: string, photoIndex: number) => {
+    setDrafts((prev) =>
+      prev.map((d) => {
+        if (d.id !== bookId) return d;
+        URL.revokeObjectURL(d.imagePreviewUrls[photoIndex]);
+        const newFiles = d.imageFiles.filter((_, i) => i !== photoIndex);
+        const newUrls = d.imagePreviewUrls.filter((_, i) => i !== photoIndex);
+        return {
+          ...d,
+          imageFiles: newFiles,
+          imagePreviewUrls: newUrls,
+          // Recalculate base64 will happen on analyze
+          imageBase64: photoIndex === 0 ? '' : d.imageBase64,
+        };
+      })
+    );
+  }, []);
+
+  // ---------- Remove a book ----------
 
   function removeDraft(id: string) {
     setDrafts((prev) => {
       const draft = prev.find((d) => d.id === id);
-      if (draft) URL.revokeObjectURL(draft.imagePreviewUrl);
+      if (draft) draft.imagePreviewUrls.forEach((url) => URL.revokeObjectURL(url));
       return prev.filter((d) => d.id !== id);
     });
   }
@@ -68,17 +97,28 @@ export default function LotePage() {
   // ---------- Analyze all ----------
 
   async function analyzeAll() {
+    // Ensure base64 is set for all drafts with photos
+    const updatedDrafts = await Promise.all(
+      drafts.map(async (d) => {
+        if (d.imageFiles.length > 0 && !d.imageBase64) {
+          const { base64 } = await resizeImageForAnalysis(d.imageFiles[0]);
+          return { ...d, imageBase64: base64 };
+        }
+        return d;
+      })
+    );
+    setDrafts(updatedDrafts);
+
     setPhase('analyzing');
     const limit = limiterRef.current;
 
-    const pendingDrafts = drafts.filter(
-      (d) => d.status === 'pending' || d.status === 'error'
+    const toAnalyze = updatedDrafts.filter(
+      (d) => (d.status === 'pending' || d.status === 'error') && d.imageFiles.length > 0
     );
 
     await Promise.allSettled(
-      pendingDrafts.map((draft) =>
+      toAnalyze.map((draft) =>
         limit(async () => {
-          // Set analyzing
           setDrafts((prev) =>
             prev.map((d) =>
               d.id === draft.id ? { ...d, status: 'analyzing' as const, error: '' } : d
@@ -131,11 +171,18 @@ export default function LotePage() {
 
   async function retrySingle(id: string) {
     const draft = drafts.find((d) => d.id === id);
-    if (!draft) return;
+    if (!draft || draft.imageFiles.length === 0) return;
+
+    // Ensure base64
+    let base64 = draft.imageBase64;
+    if (!base64) {
+      const result = await resizeImageForAnalysis(draft.imageFiles[0]);
+      base64 = result.base64;
+    }
 
     setDrafts((prev) =>
       prev.map((d) =>
-        d.id === id ? { ...d, status: 'analyzing' as const, error: '' } : d
+        d.id === id ? { ...d, status: 'analyzing' as const, error: '', imageBase64: base64 } : d
       )
     );
 
@@ -143,10 +190,7 @@ export default function LotePage() {
       const res = await fetch('/api/analyze', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          imageBase64: draft.imageBase64,
-          mimeType: 'image/jpeg',
-        }),
+        body: JSON.stringify({ imageBase64: base64, mimeType: 'image/jpeg' }),
       });
 
       if (!res.ok) throw new Error('Erro na analise da IA');
@@ -187,24 +231,26 @@ export default function LotePage() {
       const draft = drafts.find((d) => d.id === id);
       let media: MediaItem[] = [];
 
-      // If the form already has media from BookForm editing, use those
+      // If the form already has uploaded media from BookForm, use those
       if (data.media && Array.isArray(data.media) && data.media.length > 0) {
         media = data.media;
-      } else if (draft) {
-        // Upload the original image
-        const { blob } = await resizeImageForAnalysis(draft.imageFile);
-        const formDataUpload = new FormData();
-        formDataUpload.append('file', blob, draft.imageFile.name);
+      } else if (draft && draft.imageFiles.length > 0) {
+        // Upload all images for this book
+        for (const file of draft.imageFiles) {
+          const { blob } = await resizeImageForAnalysis(file);
+          const formDataUpload = new FormData();
+          formDataUpload.append('file', blob, file.name);
 
-        const uploadRes = await fetch('/api/upload', {
-          method: 'POST',
-          body: formDataUpload,
-        });
+          const uploadRes = await fetch('/api/upload', {
+            method: 'POST',
+            body: formDataUpload,
+          });
 
-        if (!uploadRes.ok) throw new Error('Erro no upload da imagem');
+          if (!uploadRes.ok) throw new Error('Erro no upload da imagem');
 
-        const uploadResult = await uploadRes.json();
-        media = [{ url: uploadResult.url, type: 'image', path: uploadResult.path }];
+          const uploadResult = await uploadRes.json();
+          media.push({ url: uploadResult.url, type: 'image', path: uploadResult.path });
+        }
       }
 
       const bookData = {
@@ -251,6 +297,7 @@ export default function LotePage() {
   // ---------- Stats ----------
 
   const totalCount = drafts.length;
+  const withPhotos = drafts.filter((d) => d.imageFiles.length > 0).length;
   const analyzedCount = drafts.filter(
     (d) => d.status === 'analyzed' || d.status === 'published' || d.status === 'publishing'
   ).length;
@@ -258,6 +305,7 @@ export default function LotePage() {
   const publishedCount = drafts.filter((d) => d.status === 'published').length;
   const readyCount = drafts.filter((d) => d.status === 'analyzed').length;
   const analyzingCount = drafts.filter((d) => d.status === 'analyzing').length;
+  const canAnalyze = phase === 'select' && withPhotos > 0;
 
   // ---------- Render ----------
 
@@ -267,7 +315,7 @@ export default function LotePage() {
         <div>
           <h1 className="text-xl font-bold text-gray-900">Adicionar em lote</h1>
           <p className="text-sm text-warm-500 mt-1">
-            Selecione uma foto de cada livro. A IA analisa todos de uma vez.
+            Adicione livros, coloque as fotos de cada um e analise todos com IA.
           </p>
         </div>
         <Link
@@ -278,115 +326,71 @@ export default function LotePage() {
         </Link>
       </div>
 
-      {/* Phase: Select photos */}
-      {(phase === 'select' || (phase === 'review' && readyCount < totalCount)) && (
-        <div className="mb-6">
-          <div
-            onDrop={handleDrop}
-            onDragOver={(e) => e.preventDefault()}
-            className="border-2 border-dashed border-warm-300 rounded-2xl hover:border-navy-400 transition-colors"
-          >
-            <div className="py-10 flex flex-col items-center justify-center text-warm-400 px-4">
-              <svg className="w-12 h-12 mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
-              </svg>
-              <p className="text-sm font-medium text-warm-500 mb-1">
-                Arraste fotos dos livros aqui
-              </p>
-              <p className="text-xs text-warm-400 mb-4">
-                Uma foto por livro (capa ou frente). Voce pode adicionar mais fotos depois.
-              </p>
-              <button
-                type="button"
-                onClick={() => fileInputRef.current?.click()}
-                className="flex items-center gap-2 px-4 py-2.5 bg-navy-700 text-white rounded-xl text-sm font-medium hover:bg-navy-600 active:scale-95 transition-all"
-              >
-                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" />
-                </svg>
-                Escolher fotos
-              </button>
-            </div>
-          </div>
-
-          <input
-            ref={fileInputRef}
-            type="file"
-            accept="image/jpeg,image/png,image/webp"
-            multiple
-            onChange={handleInputChange}
-            className="hidden"
-          />
+      {/* Book slots list */}
+      {drafts.length > 0 && (
+        <div className="space-y-3 mb-4">
+          {drafts.map((draft, i) => (
+            <BulkBookCard
+              key={draft.id}
+              draft={draft}
+              index={i}
+              onAddPhotos={addPhotosToBook}
+              onRemovePhoto={removePhotoFromBook}
+              onPublish={publishSingle}
+              onRetry={retrySingle}
+              onRemove={removeDraft}
+            />
+          ))}
         </div>
       )}
 
-      {/* Selected photos preview + analyze button */}
-      {drafts.length > 0 && phase === 'select' && (
-        <div className="mb-6">
-          <div className="flex items-center justify-between mb-3">
-            <p className="text-sm font-medium text-warm-700">
-              {totalCount} {totalCount === 1 ? 'foto selecionada' : 'fotos selecionadas'}
-            </p>
-            <div className="flex gap-2">
-              <button
-                onClick={() => {
-                  drafts.forEach((d) => URL.revokeObjectURL(d.imagePreviewUrl));
-                  setDrafts([]);
-                }}
-                className="px-3 py-1.5 text-xs text-warm-500 hover:text-red-600 transition"
-              >
-                Limpar tudo
-              </button>
-              <button
-                onClick={analyzeAll}
-                className="px-4 py-2 bg-navy-700 text-white rounded-xl text-sm font-medium hover:bg-navy-600 transition"
-              >
-                Analisar todos com IA
-              </button>
-            </div>
-          </div>
+      {/* Add book button */}
+      {(phase === 'select' || phase === 'review') && (
+        <button
+          onClick={addBookSlot}
+          className="w-full py-4 border-2 border-dashed border-warm-300 rounded-2xl text-warm-500 hover:border-navy-400 hover:text-navy-600 transition-colors flex items-center justify-center gap-2"
+        >
+          <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+          </svg>
+          <span className="text-sm font-medium">Adicionar livro</span>
+        </button>
+      )}
 
-          {/* Photo grid preview */}
-          <div className="grid grid-cols-4 sm:grid-cols-6 md:grid-cols-8 gap-2">
-            {drafts.map((draft, i) => (
-              <div key={draft.id} className="relative aspect-square rounded-lg overflow-hidden bg-warm-100">
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img
-                  src={draft.imagePreviewUrl}
-                  alt={`Foto ${i + 1}`}
-                  className="w-full h-full object-cover"
-                />
-                <button
-                  onClick={() => removeDraft(draft.id)}
-                  className="absolute top-1 right-1 w-5 h-5 bg-black/60 text-white rounded-full flex items-center justify-center text-xs hover:bg-black/80"
-                >
-                  &times;
-                </button>
-                <span className="absolute bottom-1 left-1 bg-black/50 text-white text-[10px] px-1.5 py-0.5 rounded">
-                  {i + 1}
-                </span>
-              </div>
-            ))}
-          </div>
+      {/* Action bar */}
+      {canAnalyze && (
+        <div className="mt-4 flex items-center justify-between bg-navy-50 rounded-2xl p-4">
+          <p className="text-sm text-navy-700">
+            <span className="font-semibold">{withPhotos}</span> {withPhotos === 1 ? 'livro' : 'livros'} com fotos
+            {totalCount - withPhotos > 0 && (
+              <span className="text-warm-400 ml-1">
+                ({totalCount - withPhotos} sem foto)
+              </span>
+            )}
+          </p>
+          <button
+            onClick={analyzeAll}
+            className="px-5 py-2.5 bg-navy-700 text-white rounded-xl text-sm font-medium hover:bg-navy-600 transition"
+          >
+            Analisar todos com IA
+          </button>
         </div>
       )}
 
       {/* Progress bar during analysis */}
       {(phase === 'analyzing' || (phase === 'review' && analyzingCount > 0)) && (
-        <div className="mb-6">
+        <div className="mt-4 mb-4">
           <div className="flex items-center justify-between mb-2">
-            <p className="text-sm font-medium text-navy-700">
-              Analisando com IA...
-            </p>
+            <p className="text-sm font-medium text-navy-700">Analisando com IA...</p>
             <p className="text-sm text-warm-500">
-              {analyzedCount + errorCount}/{totalCount}
+              {analyzedCount + errorCount}/{withPhotos}
             </p>
           </div>
           <div className="w-full h-2 bg-warm-100 rounded-full overflow-hidden">
             <div
               className="h-full bg-navy-600 rounded-full transition-all duration-300"
               style={{
-                width: `${totalCount > 0 ? ((analyzedCount + errorCount) / totalCount) * 100 : 0}%`,
+                width: `${withPhotos > 0 ? ((analyzedCount + errorCount) / withPhotos) * 100 : 0}%`,
               }}
             />
           </div>
@@ -398,9 +402,9 @@ export default function LotePage() {
         </div>
       )}
 
-      {/* Review phase: stats + cards */}
+      {/* Review stats */}
       {phase === 'review' && analyzingCount === 0 && (
-        <div className="mb-4">
+        <div className="mt-4">
           <div className="grid grid-cols-3 gap-3 mb-4">
             <div className="bg-white rounded-2xl p-3 border border-gray-100 text-center">
               <p className="text-xl font-bold text-green-600">{readyCount}</p>
@@ -416,20 +420,9 @@ export default function LotePage() {
             </div>
           </div>
 
-          {readyCount > 0 && publishedCount === totalCount - errorCount ? null : readyCount > 0 ? (
-            <div className="flex gap-2 mb-4">
-              <button
-                onClick={() => fileInputRef.current?.click()}
-                className="px-3 py-1.5 text-xs font-medium bg-warm-100 text-warm-700 rounded-lg hover:bg-warm-200 transition"
-              >
-                + Adicionar mais fotos
-              </button>
-            </div>
-          ) : null}
-
           {/* All published message */}
           {publishedCount > 0 && readyCount === 0 && errorCount === 0 && (
-            <div className="bg-green-50 border border-green-200 rounded-2xl p-6 text-center mb-4">
+            <div className="bg-green-50 border border-green-200 rounded-2xl p-6 text-center">
               <svg className="w-10 h-10 text-green-500 mx-auto mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
               </svg>
@@ -441,22 +434,6 @@ export default function LotePage() {
               </Link>
             </div>
           )}
-        </div>
-      )}
-
-      {/* Draft cards list */}
-      {(phase === 'analyzing' || phase === 'review') && (
-        <div className="space-y-2">
-          {drafts.map((draft, i) => (
-            <BulkBookCard
-              key={draft.id}
-              draft={draft}
-              index={i}
-              onPublish={publishSingle}
-              onRetry={retrySingle}
-              onRemove={removeDraft}
-            />
-          ))}
         </div>
       )}
     </div>

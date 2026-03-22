@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 import Image from 'next/image';
 import BookForm from './BookForm';
 import type { Book, MediaItem } from '@/types';
@@ -15,9 +15,9 @@ export type DraftStatus =
 
 export interface BulkDraft {
   id: string;
-  imageFile: File;
-  imagePreviewUrl: string;
-  imageBase64: string;
+  imageFiles: File[];
+  imagePreviewUrls: string[];
+  imageBase64: string; // first image base64 for AI
   status: DraftStatus;
   error: string;
   formData: Partial<Book>;
@@ -27,6 +27,8 @@ export interface BulkDraft {
 interface BulkBookCardProps {
   draft: BulkDraft;
   index: number;
+  onAddPhotos: (id: string, files: File[]) => void;
+  onRemovePhoto: (id: string, photoIndex: number) => void;
   onPublish: (id: string, data: Partial<Book>) => Promise<void>;
   onRetry: (id: string) => void;
   onRemove: (id: string) => void;
@@ -36,44 +38,162 @@ function formatPrice(cents: number): string {
   return `R$ ${(cents / 100).toFixed(2).replace('.', ',')}`;
 }
 
-export default function BulkBookCard({ draft, index, onPublish, onRetry, onRemove }: BulkBookCardProps) {
+export default function BulkBookCard({
+  draft,
+  index,
+  onAddPhotos,
+  onRemovePhoto,
+  onPublish,
+  onRetry,
+  onRemove,
+}: BulkBookCardProps) {
   const [expanded, setExpanded] = useState(false);
-  const { status, formData, error, imagePreviewUrl } = draft;
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const { status, formData, error, imagePreviewUrls } = draft;
 
   const isFinished = status === 'published';
   const isProcessing = status === 'analyzing' || status === 'publishing';
+  const hasPhotos = imagePreviewUrls.length > 0;
 
-  async function handleFormSubmit(data: Partial<Book>) {
-    await onPublish(draft.id, data);
+  function handleFileInput(e: React.ChangeEvent<HTMLInputElement>) {
+    if (e.target.files && e.target.files.length > 0) {
+      const imageFiles = Array.from(e.target.files).filter((f) =>
+        f.type.startsWith('image/')
+      );
+      if (imageFiles.length > 0) {
+        onAddPhotos(draft.id, imageFiles);
+      }
+    }
+    e.target.value = '';
   }
 
+  // Pending state: photo upload UI
+  if (status === 'pending') {
+    return (
+      <div className="bg-white rounded-xl border border-gray-100 overflow-hidden">
+        <div className="p-4">
+          <div className="flex items-center justify-between mb-3">
+            <div className="flex items-center gap-2">
+              <div className="w-6 h-6 rounded-full bg-navy-100 flex items-center justify-center flex-shrink-0">
+                <span className="text-xs font-bold text-navy-700">{index + 1}</span>
+              </div>
+              <h3 className="text-sm font-medium text-gray-900">Livro {index + 1}</h3>
+              {hasPhotos && (
+                <span className="text-xs text-warm-400">
+                  {imagePreviewUrls.length} {imagePreviewUrls.length === 1 ? 'foto' : 'fotos'}
+                </span>
+              )}
+            </div>
+            <button
+              onClick={() => onRemove(draft.id)}
+              className="p-1.5 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition"
+              title="Remover livro"
+            >
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+              </svg>
+            </button>
+          </div>
+
+          {/* Photos grid */}
+          {hasPhotos && (
+            <div className="grid grid-cols-4 sm:grid-cols-6 gap-2 mb-3">
+              {imagePreviewUrls.map((url, i) => (
+                <div key={i} className="relative aspect-square rounded-lg overflow-hidden bg-warm-100">
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img src={url} alt={`Foto ${i + 1}`} className="w-full h-full object-cover" />
+                  {i === 0 && (
+                    <span className="absolute top-1 left-1 bg-navy-700 text-white text-[9px] px-1 py-0.5 rounded font-medium">
+                      Capa
+                    </span>
+                  )}
+                  <button
+                    onClick={() => onRemovePhoto(draft.id, i)}
+                    className="absolute top-1 right-1 w-5 h-5 bg-black/60 text-white rounded-full flex items-center justify-center text-xs hover:bg-black/80"
+                  >
+                    &times;
+                  </button>
+                </div>
+              ))}
+              {/* Add more photos button inline */}
+              <button
+                type="button"
+                onClick={() => fileInputRef.current?.click()}
+                className="aspect-square rounded-lg border-2 border-dashed border-warm-300 flex flex-col items-center justify-center text-warm-400 hover:border-navy-400 hover:text-navy-600 transition-colors"
+              >
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+                </svg>
+                <span className="text-[9px] mt-0.5">Mais</span>
+              </button>
+            </div>
+          )}
+
+          {/* Empty: add first photo */}
+          {!hasPhotos && (
+            <button
+              type="button"
+              onClick={() => fileInputRef.current?.click()}
+              className="w-full py-6 border-2 border-dashed border-warm-300 rounded-xl flex flex-col items-center justify-center text-warm-400 hover:border-navy-400 hover:text-navy-600 transition-colors"
+            >
+              <svg className="w-8 h-8 mb-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+              </svg>
+              <span className="text-xs font-medium">Adicionar fotos deste livro</span>
+              <span className="text-[10px] mt-0.5">A primeira foto sera usada para analise da IA</span>
+            </button>
+          )}
+
+          <input
+            ref={fileInputRef}
+            type="file"
+            accept="image/jpeg,image/png,image/webp"
+            multiple
+            onChange={handleFileInput}
+            className="hidden"
+          />
+        </div>
+      </div>
+    );
+  }
+
+  // Analyzing / analyzed / error / publishing / published states
   return (
     <div className={`bg-white rounded-xl border overflow-hidden transition-all ${
       isFinished ? 'border-green-200 opacity-60' : 'border-gray-100'
     }`}>
-      {/* Collapsed header — always visible */}
+      {/* Collapsed header */}
       <div className="p-3 flex items-center gap-3">
-        {/* Index badge */}
         <div className="w-6 h-6 rounded-full bg-warm-100 flex items-center justify-center flex-shrink-0">
           <span className="text-xs font-medium text-warm-500">{index + 1}</span>
         </div>
 
-        {/* Thumbnail */}
+        {/* Thumbnail: show first image */}
         <div className="w-14 h-14 rounded-lg bg-gray-100 overflow-hidden flex-shrink-0 relative">
-          <Image
-            src={imagePreviewUrl}
-            alt={formData.title || `Livro ${index + 1}`}
-            fill
-            className="object-cover"
-            sizes="56px"
-          />
+          {imagePreviewUrls[0] ? (
+            <Image
+              src={imagePreviewUrls[0]}
+              alt={formData.title || `Livro ${index + 1}`}
+              fill
+              className="object-cover"
+              sizes="56px"
+            />
+          ) : (
+            <div className="w-full h-full flex items-center justify-center text-gray-300">
+              <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
+              </svg>
+            </div>
+          )}
+          {imagePreviewUrls.length > 1 && (
+            <span className="absolute bottom-0.5 right-0.5 bg-black/60 text-white text-[9px] px-1 py-0.5 rounded">
+              +{imagePreviewUrls.length - 1}
+            </span>
+          )}
         </div>
 
         {/* Info */}
         <div className="flex-1 min-w-0">
-          {status === 'pending' && (
-            <p className="text-sm text-warm-400">Aguardando analise...</p>
-          )}
           {status === 'analyzing' && (
             <div className="flex items-center gap-2">
               <div className="w-4 h-4 border-2 border-navy-600 border-t-transparent rounded-full animate-spin" />
@@ -113,7 +233,7 @@ export default function BulkBookCard({ draft, index, onPublish, onRetry, onRemov
           )}
         </div>
 
-        {/* Status badge + actions */}
+        {/* Actions */}
         <div className="flex items-center gap-1 flex-shrink-0">
           {status === 'published' && (
             <span className="text-xs bg-green-100 text-green-700 px-2 py-1 rounded-full font-medium">
