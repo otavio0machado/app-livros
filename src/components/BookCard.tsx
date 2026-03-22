@@ -8,7 +8,10 @@ import { useCart } from './CartProvider';
 const CONDITION_LABEL: Record<string, string> = {
   'Novo': 'Novo',
   'Usado - Excelente estado, como novo.': 'Excelente',
-  'Usado - Pode conter poucos escritos ou marcações.': 'Bom estado',
+  'Usado - Contém marcas de uso.': 'Marcas de uso',
+  'Usado - Contém marcas de uso e pode conter poucos escritos ou marcações.': 'Marcas + escritos',
+  'Usado - Pode conter poucos escritos ou marcações.': 'Poucos escritos',
+  'Usado - Contém marcas de uso, bastante marcações, escritos e/ou exercícios resolvidos.': 'Bastante uso',
   'Usado - Contém bastante marcações, escritos e/ou exercícios resolvidos.': 'Com marcações',
 };
 

@@ -9,7 +9,10 @@ import ShopeeLabelPreview from './ShopeeLabelPreview';
 const CONDITIONS = [
   'Novo',
   'Usado - Excelente estado, como novo.',
+  'Usado - Contém marcas de uso.',
+  'Usado - Contém marcas de uso e pode conter poucos escritos ou marcações.',
   'Usado - Pode conter poucos escritos ou marcações.',
+  'Usado - Contém marcas de uso, bastante marcações, escritos e/ou exercícios resolvidos.',
   'Usado - Contém bastante marcações, escritos e/ou exercícios resolvidos.',
 ];
 

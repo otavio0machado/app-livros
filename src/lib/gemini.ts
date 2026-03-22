@@ -46,7 +46,7 @@ Retorne um JSON com estes campos exatos:
   "publisher": "Editora ou cursinho",
   "isbn": "ISBN se visível, senão string vazia",
   "category": "Uma de: Ficção, Não-Ficção, Infantil, Acadêmico, Autoajuda, Biografia, Romance, Terror, Fantasia, Ciência, História, Religião, Computadores e Tecnologia, Direito, Medicina, Engenharia, Vestibular, Outro",
-  "condition_detail": "Baseado no desgaste visível: Novo, Usado - Excelente estado como novo., Usado - Pode conter poucos escritos ou marcações., Usado - Contém bastante marcações escritos e/ou exercícios resolvidos.",
+  "condition_detail": "Baseado no desgaste visível, escolha UMA: Novo, Usado - Excelente estado como novo., Usado - Contém marcas de uso., Usado - Contém marcas de uso e pode conter poucos escritos ou marcações., Usado - Pode conter poucos escritos ou marcações., Usado - Contém marcas de uso bastante marcações escritos e/ou exercícios resolvidos., Usado - Contém bastante marcações escritos e/ou exercícios resolvidos.",
   "description": "Descrição atrativa de 2-3 frases em português para vender este item",
   "language": "Português, Inglês, Espanhol, etc.",
   "edition_type": "1ª Edição, 2ª Edição, etc. ou vazio",
