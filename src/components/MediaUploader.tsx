@@ -16,11 +16,15 @@ const MAX_VIDEOS = 1;
 export default function MediaUploader({ items, onChange, onFirstImageBase64 }: MediaUploaderProps) {
   const [uploading, setUploading] = useState(false);
   const [error, setError] = useState('');
-  const inputRef = useRef<HTMLInputElement>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const cameraInputRef = useRef<HTMLInputElement>(null);
+  const videoInputRef = useRef<HTMLInputElement>(null);
 
   const imageCount = items.filter((i) => i.type === 'image').length;
   const videoCount = items.filter((i) => i.type === 'video').length;
-  const canAddMore = imageCount < MAX_IMAGES || videoCount < MAX_VIDEOS;
+  const canAddImage = imageCount < MAX_IMAGES;
+  const canAddVideo = videoCount < MAX_VIDEOS;
+  const canAddMore = canAddImage || canAddVideo;
 
   async function resizeImage(file: File): Promise<{ blob: Blob; base64: string }> {
     return new Promise((resolve) => {
@@ -81,7 +85,6 @@ export default function MediaUploader({ items, onChange, onFirstImageBase64 }: M
 
     const { path, url, type } = await res.json();
 
-    // Send base64 for AI analysis on first image
     if (base64ForAI && onFirstImageBase64 && items.filter((i) => i.type === 'image').length === 0) {
       onFirstImageBase64(base64ForAI, 'image/jpeg');
     }
@@ -128,13 +131,19 @@ export default function MediaUploader({ items, onChange, onFirstImageBase64 }: M
   }
 
   function removeItem(index: number) {
-    const updated = items.filter((_, i) => i !== index);
-    onChange(updated);
+    onChange(items.filter((_, i) => i !== index));
   }
 
   function handleDrop(e: React.DragEvent) {
     e.preventDefault();
     if (e.dataTransfer.files.length > 0) handleFiles(e.dataTransfer.files);
+  }
+
+  function handleInputChange(e: React.ChangeEvent<HTMLInputElement>) {
+    if (e.target.files && e.target.files.length > 0) {
+      handleFiles(e.target.files);
+    }
+    e.target.value = '';
   }
 
   return (
@@ -172,7 +181,7 @@ export default function MediaUploader({ items, onChange, onFirstImageBase64 }: M
           {canAddMore && !uploading && (
             <button
               type="button"
-              onClick={() => inputRef.current?.click()}
+              onClick={() => fileInputRef.current?.click()}
               className="aspect-square rounded-xl border-2 border-dashed border-warm-300 flex flex-col items-center justify-center text-warm-400 hover:border-navy-400 hover:text-navy-600 transition-colors"
             >
               <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -184,27 +193,95 @@ export default function MediaUploader({ items, onChange, onFirstImageBase64 }: M
         </div>
       )}
 
-      {/* Empty state / Initial upload area */}
-      {items.length === 0 && (
+      {/* Empty state */}
+      {items.length === 0 && !uploading && (
         <div
-          onClick={() => inputRef.current?.click()}
           onDrop={handleDrop}
           onDragOver={(e) => e.preventDefault()}
-          className="border-2 border-dashed border-warm-300 rounded-2xl cursor-pointer hover:border-navy-400 transition-colors"
+          className="border-2 border-dashed border-warm-300 rounded-2xl"
         >
-          <div className="py-10 flex flex-col items-center justify-center text-warm-400">
-            {uploading ? (
-              <div className="w-8 h-8 border-4 border-navy-600 border-t-transparent rounded-full animate-spin" />
-            ) : (
-              <>
-                <svg className="w-10 h-10 mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+          <div className="py-8 flex flex-col items-center justify-center text-warm-400 px-4">
+            <svg className="w-10 h-10 mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+            </svg>
+            <p className="text-sm font-medium text-warm-500 mb-1">Adicione fotos e vídeos</p>
+            <p className="text-xs text-warm-400 mb-4">Até {MAX_IMAGES} fotos e {MAX_VIDEOS} vídeo</p>
+
+            {/* Action buttons */}
+            <div className="flex flex-wrap gap-2 justify-center">
+              <button
+                type="button"
+                onClick={() => cameraInputRef.current?.click()}
+                className="flex items-center gap-1.5 px-3 py-2 bg-navy-700 text-white rounded-lg text-sm font-medium hover:bg-navy-600 active:scale-95 transition-all"
+              >
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z" />
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 13a3 3 0 11-6 0 3 3 0 016 0z" />
                 </svg>
-                <p className="text-sm font-medium text-warm-500">Toque para adicionar fotos ou vídeos</p>
-                <p className="text-xs mt-1">Até {MAX_IMAGES} fotos e {MAX_VIDEOS} vídeo</p>
-              </>
-            )}
+                Tirar foto
+              </button>
+
+              <button
+                type="button"
+                onClick={() => videoInputRef.current?.click()}
+                className="flex items-center gap-1.5 px-3 py-2 bg-warm-800 text-white rounded-lg text-sm font-medium hover:bg-warm-700 active:scale-95 transition-all"
+              >
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z" />
+                </svg>
+                Gravar vídeo
+              </button>
+
+              <button
+                type="button"
+                onClick={() => fileInputRef.current?.click()}
+                className="flex items-center gap-1.5 px-3 py-2 bg-warm-100 text-warm-700 rounded-lg text-sm font-medium hover:bg-warm-200 active:scale-95 transition-all"
+              >
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" />
+                </svg>
+                Escolher arquivo
+              </button>
+            </div>
           </div>
+        </div>
+      )}
+
+      {/* Loading */}
+      {uploading && items.length === 0 && (
+        <div className="border-2 border-dashed border-warm-300 rounded-2xl py-10 flex items-center justify-center">
+          <div className="w-8 h-8 border-4 border-navy-600 border-t-transparent rounded-full animate-spin" />
+        </div>
+      )}
+
+      {/* Action buttons when items exist */}
+      {items.length > 0 && canAddMore && !uploading && (
+        <div className="flex flex-wrap gap-2 mt-2">
+          {canAddImage && (
+            <button
+              type="button"
+              onClick={() => cameraInputRef.current?.click()}
+              className="flex items-center gap-1.5 px-2.5 py-1.5 text-xs font-medium text-navy-700 bg-navy-50 rounded-lg hover:bg-navy-100 active:scale-95 transition-all"
+            >
+              <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z" />
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 13a3 3 0 11-6 0 3 3 0 016 0z" />
+              </svg>
+              Tirar foto
+            </button>
+          )}
+          {canAddVideo && (
+            <button
+              type="button"
+              onClick={() => videoInputRef.current?.click()}
+              className="flex items-center gap-1.5 px-2.5 py-1.5 text-xs font-medium text-warm-700 bg-warm-100 rounded-lg hover:bg-warm-200 active:scale-95 transition-all"
+            >
+              <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z" />
+              </svg>
+              Gravar vídeo
+            </button>
+          )}
         </div>
       )}
 
@@ -216,12 +293,32 @@ export default function MediaUploader({ items, onChange, onFirstImageBase64 }: M
         </div>
       )}
 
+      {/* Hidden inputs */}
+      {/* File picker (gallery) */}
       <input
-        ref={inputRef}
+        ref={fileInputRef}
         type="file"
         accept="image/jpeg,image/png,image/webp,video/mp4,video/quicktime,video/webm"
         multiple
-        onChange={(e) => e.target.files && handleFiles(e.target.files)}
+        onChange={handleInputChange}
+        className="hidden"
+      />
+      {/* Camera capture (photo) */}
+      <input
+        ref={cameraInputRef}
+        type="file"
+        accept="image/*"
+        capture="environment"
+        onChange={handleInputChange}
+        className="hidden"
+      />
+      {/* Camera capture (video) */}
+      <input
+        ref={videoInputRef}
+        type="file"
+        accept="video/*"
+        capture="environment"
+        onChange={handleInputChange}
         className="hidden"
       />
 
