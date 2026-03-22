@@ -3,24 +3,33 @@ import Link from 'next/link';
 import SearchBar from '@/components/SearchBar';
 import BookGrid from '@/components/BookGrid';
 import type { Book } from '@/types';
+import { getSupabaseAdmin } from '@/lib/supabase';
 
 async function getBooks(searchParams: Record<string, string>): Promise<Book[]> {
-  const params = new URLSearchParams();
-  if (searchParams.search) params.set('search', searchParams.search);
-  if (searchParams.category) params.set('category', searchParams.category);
-  if (searchParams.type) params.set('type', searchParams.type);
-  params.set('status', 'available');
-
-  const baseUrl = process.env.VERCEL_URL
-    ? `https://${process.env.VERCEL_URL}`
-    : 'http://localhost:3000';
-  const url = `${baseUrl}/api/books?${params.toString()}`;
-
   try {
-    const res = await fetch(url, { cache: 'no-store' });
-    if (!res.ok) return [];
-    return res.json();
-  } catch {
+    const supabase = getSupabaseAdmin();
+    let query = supabase
+      .from('books')
+      .select('*')
+      .eq('status', 'available')
+      .order('created_at', { ascending: false });
+
+    if (searchParams.category) query = query.eq('category', searchParams.category);
+    if (searchParams.type) query = query.eq('type', searchParams.type);
+    if (searchParams.search) {
+      query = query.or(
+        `title.ilike.%${searchParams.search}%,author.ilike.%${searchParams.search}%,description.ilike.%${searchParams.search}%`
+      );
+    }
+
+    const { data, error } = await query;
+    if (error) {
+      console.error('Supabase error:', error.message);
+      return [];
+    }
+    return (data || []) as Book[];
+  } catch (err) {
+    console.error('Error fetching books:', err);
     return [];
   }
 }

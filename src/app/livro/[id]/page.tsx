@@ -2,15 +2,18 @@ import Image from 'next/image';
 import Link from 'next/link';
 import type { Book } from '@/types';
 import AddToCartButton from './AddToCartButton';
+import { getSupabaseAdmin } from '@/lib/supabase';
 
 async function getBook(id: string): Promise<Book | null> {
   try {
-    const baseUrl = process.env.VERCEL_URL
-      ? `https://${process.env.VERCEL_URL}`
-      : 'http://localhost:3000';
-    const res = await fetch(`${baseUrl}/api/books/${id}`, { cache: 'no-store' });
-    if (!res.ok) return null;
-    return res.json();
+    const supabase = getSupabaseAdmin();
+    const { data, error } = await supabase
+      .from('books')
+      .select('*')
+      .eq('id', parseInt(id))
+      .single();
+    if (error || !data) return null;
+    return data as Book;
   } catch {
     return null;
   }
