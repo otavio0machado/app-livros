@@ -61,32 +61,15 @@ export interface CartItem {
   type: string;
 }
 
-export interface GeminiCollectionVolume {
+export interface GeminiCollectionAnalysis {
   title: string;
-  author: string;
-  publisher: string;
-  isbn: string;
-  volume_number: number;
-  year: string;
   description: string;
-  category: string;
-  language: string;
-  edition_type: string;
-  cover_type: string;
-  weight_kg: number;
   suggested_price_cents: number;
+  category: string;
+  weight_kg: number;
   width_cm: number;
   length_cm: number;
   height_cm: number;
-  subject: string;
-  course_origin: string;
-}
-
-export interface GeminiCollectionAnalysis {
-  collection_name: string;
-  total_volumes: number;
-  type: 'Livro' | 'Apostila';
-  volumes: GeminiCollectionVolume[];
 }
 
 export interface GeminiAnalysis {

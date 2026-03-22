@@ -1,45 +1,99 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import type { Book, GeminiCollectionAnalysis, MediaItem } from '@/types';
 import MediaUploader from '@/components/MediaUploader';
 import ConditionSelector from '@/components/ConditionSelector';
 import BookForm from '@/components/BookForm';
 
-function generateId() {
-  return Math.random().toString(36).slice(2, 10);
+function formatPrice(cents: number): string {
+  return `R$ ${(cents / 100).toFixed(2).replace('.', ',')}`;
 }
 
-interface VolumeDraft {
-  id: string;
-  volumeNumber: number;
-  formData: Partial<Book>;
-  expanded: boolean;
-  status: 'ready' | 'publishing' | 'published' | 'error';
-  error: string;
-}
-
-type Phase = 'upload' | 'analyzing' | 'review' | 'done';
+type Phase = 'setup' | 'analyzing' | 'review' | 'done';
+type Mode = 'with-books' | 'collection-only';
 
 export default function ColecaoPage() {
+  // Mode
+  const [mode, setMode] = useState<Mode>('with-books');
+
+  // Phase 1: Setup
   const [media, setMedia] = useState<MediaItem[]>([]);
   const [condition, setCondition] = useState('');
-  const [phase, setPhase] = useState<Phase>('upload');
+  const [discountPct, setDiscountPct] = useState(15);
+
+  // Book selection (only for with-books mode)
+  const [allBooks, setAllBooks] = useState<Book[]>([]);
+  const [selectedBookIds, setSelectedBookIds] = useState<Set<number>>(new Set());
+  const [loadingBooks, setLoadingBooks] = useState(true);
+  const [searchQuery, setSearchQuery] = useState('');
+
+  // Phase 2+
+  const [phase, setPhase] = useState<Phase>('setup');
   const [analyzing, setAnalyzing] = useState(false);
   const [analysisError, setAnalysisError] = useState('');
 
-  const [collectionName, setCollectionName] = useState('');
-  const [collectionId] = useState(generateId());
-  const [discountPct, setDiscountPct] = useState(15);
-  const [volumes, setVolumes] = useState<VolumeDraft[]>([]);
+  // Phase 3: Review
+  const [collectionFormData, setCollectionFormData] = useState<Partial<Book> | null>(null);
+  const [collectionMedia, setCollectionMedia] = useState<MediaItem[]>([]);
 
+  // Load existing books
+  useEffect(() => {
+    async function loadBooks() {
+      try {
+        const res = await fetch('/api/books?status=available');
+        const data = await res.json();
+        setAllBooks(data);
+      } catch (err) {
+        console.error('Erro ao carregar livros:', err);
+      } finally {
+        setLoadingBooks(false);
+      }
+    }
+    loadBooks();
+  }, []);
+
+  // Filtered books
+  const filteredBooks = searchQuery
+    ? allBooks.filter(
+        (b) =>
+          b.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+          b.author.toLowerCase().includes(searchQuery.toLowerCase())
+      )
+    : allBooks;
+
+  const selectedBooks = allBooks.filter((b) => selectedBookIds.has(b.id));
   const hasImages = media.filter((m) => m.type === 'image').length > 0;
-  const canAnalyze = hasImages && !!condition;
-  const publishedCount = volumes.filter((v) => v.status === 'published').length;
-  const readyCount = volumes.filter((v) => v.status === 'ready').length;
+  const canAnalyze =
+    hasImages &&
+    !!condition &&
+    (mode === 'collection-only' || selectedBookIds.size >= 2);
 
-  // ---------- Analyze collection ----------
+  function toggleBook(id: number) {
+    setSelectedBookIds((prev) => {
+      const next = new Set(prev);
+      if (next.has(id)) next.delete(id);
+      else next.add(id);
+      return next;
+    });
+  }
+
+  // ---------- Get image base64 ----------
+
+  async function getFirstImageBase64(): Promise<string> {
+    const images = media.filter((m) => m.type === 'image');
+    const response = await fetch(images[0].url);
+    const blob = await response.blob();
+    return new Promise<string>((resolve) => {
+      const reader = new FileReader();
+      reader.onload = () => resolve((reader.result as string).split(',')[1]);
+      reader.readAsDataURL(blob);
+    });
+  }
+
+  // ---------- Analyze ----------
 
   async function handleAnalyze() {
     if (!canAnalyze) return;
@@ -49,14 +103,16 @@ export default function ColecaoPage() {
     setPhase('analyzing');
 
     try {
-      const images = media.filter((m) => m.type === 'image');
-      const response = await fetch(images[0].url);
-      const blob = await response.blob();
-      const base64 = await new Promise<string>((resolve) => {
-        const reader = new FileReader();
-        reader.onload = () => resolve((reader.result as string).split(',')[1]);
-        reader.readAsDataURL(blob);
-      });
+      const base64 = await getFirstImageBase64();
+
+      const booksData =
+        mode === 'with-books'
+          ? selectedBooks.map((b) => ({
+              title: b.title,
+              author: b.author,
+              price_cents: b.price_cents,
+            }))
+          : undefined;
 
       const res = await fetch('/api/analyze-collection', {
         method: 'POST',
@@ -65,6 +121,8 @@ export default function ColecaoPage() {
           imageBase64: base64,
           mimeType: 'image/jpeg',
           condition,
+          books: booksData,
+          discountPct: mode === 'with-books' ? discountPct : undefined,
         }),
       });
 
@@ -72,160 +130,100 @@ export default function ColecaoPage() {
 
       const analysis: GeminiCollectionAnalysis = await res.json();
 
-      setCollectionName(analysis.collection_name);
+      // Build media: collection photos + individual book photos (if mode with-books)
+      let allMedia = [...media];
+      if (mode === 'with-books') {
+        const bookPhotos: MediaItem[] = selectedBooks.flatMap((b) => {
+          if (Array.isArray(b.media) && b.media.length > 0) return b.media;
+          if (b.photo_url) return [{ url: b.photo_url, type: 'image' as const, path: '' }];
+          return [];
+        });
+        allMedia = [...media, ...bookPhotos];
+      }
+      setCollectionMedia(allMedia);
 
-      const volumeDrafts: VolumeDraft[] = analysis.volumes.map((vol) => {
-        const discountedPrice = Math.round(
-          vol.suggested_price_cents * (1 - discountPct / 100)
-        );
-        return {
-          id: generateId(),
-          volumeNumber: vol.volume_number,
-          formData: {
-            type: analysis.type,
-            title: vol.title,
-            author: vol.author,
-            publisher: vol.publisher,
-            isbn: vol.isbn,
-            category: vol.category,
-            condition_detail: condition,
-            description: vol.description,
-            language: vol.language,
-            edition_type: vol.edition_type,
-            cover_type: vol.cover_type,
-            year: vol.year,
-            weight_kg: vol.weight_kg,
-            price_cents: discountedPrice,
-            width_cm: vol.width_cm,
-            length_cm: vol.length_cm,
-            height_cm: vol.height_cm,
-            subject: vol.subject,
-            course_origin: vol.course_origin,
-            origin: 'Nacional',
-            stock: 1,
-            quantity: 1,
-            status: 'available',
-          },
-          expanded: false,
-          status: 'ready',
-          error: '',
-        };
-      });
+      if (mode === 'with-books') {
+        const totalWeight = selectedBooks.reduce((sum, b) => sum + (b.weight_kg || 0.3), 0);
+        setCollectionFormData({
+          type: selectedBooks[0]?.type || 'Livro',
+          title: analysis.title,
+          description: analysis.description,
+          price_cents: analysis.suggested_price_cents,
+          category: analysis.category,
+          condition_detail: condition,
+          weight_kg: analysis.weight_kg || totalWeight,
+          width_cm: analysis.width_cm || 0,
+          length_cm: analysis.length_cm || 0,
+          height_cm: analysis.height_cm || 0,
+          author: selectedBooks
+            .map((b) => b.author)
+            .filter((a, i, arr) => arr.indexOf(a) === i)
+            .join(', '),
+          publisher: selectedBooks[0]?.publisher || '',
+          language: selectedBooks[0]?.language || 'Português',
+          origin: 'Nacional',
+          stock: 1,
+          quantity: 1,
+          status: 'available',
+          collection_name: analysis.title,
+          collection_total_volumes: selectedBooks.length,
+          collection_discount_pct: discountPct,
+        });
+      } else {
+        // Collection only - AI fills everything
+        setCollectionFormData({
+          type: 'Livro',
+          title: analysis.title,
+          description: analysis.description,
+          price_cents: analysis.suggested_price_cents,
+          category: analysis.category,
+          condition_detail: condition,
+          weight_kg: analysis.weight_kg || 0,
+          width_cm: analysis.width_cm || 0,
+          length_cm: analysis.length_cm || 0,
+          height_cm: analysis.height_cm || 0,
+          language: 'Português',
+          origin: 'Nacional',
+          stock: 1,
+          quantity: 1,
+          status: 'available',
+          collection_name: analysis.title,
+        });
+      }
 
-      setVolumes(volumeDrafts);
       setPhase('review');
     } catch (err) {
       setAnalysisError(err instanceof Error ? err.message : 'Erro desconhecido');
-      setPhase('upload');
+      setPhase('setup');
     } finally {
       setAnalyzing(false);
     }
   }
 
-  // ---------- Recalculate discount ----------
+  // ---------- Publish ----------
 
-  function applyDiscount(newPct: number) {
-    setDiscountPct(newPct);
-    // We can't recalculate because we don't have the original prices anymore
-    // The discount is applied at analysis time
-  }
+  async function handlePublish(data: Partial<Book>) {
+    const bookData = {
+      ...data,
+      collection_id: `col-${Date.now()}`,
+      collection_total_volumes:
+        mode === 'with-books' ? selectedBooks.length : undefined,
+      collection_discount_pct:
+        mode === 'with-books' ? discountPct : undefined,
+    };
 
-  // ---------- Add volume ----------
+    const res = await fetch('/api/books', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(bookData),
+    });
 
-  function addVolume() {
-    setVolumes((prev) => [
-      ...prev,
-      {
-        id: generateId(),
-        volumeNumber: prev.length + 1,
-        formData: {
-          type: 'Livro',
-          title: '',
-          author: '',
-          condition_detail: condition,
-          status: 'available',
-          stock: 1,
-          quantity: 1,
-          origin: 'Nacional',
-          language: 'Português',
-          weight_kg: 0.3,
-          price_cents: 0,
-        },
-        expanded: true,
-        status: 'ready',
-        error: '',
-      },
-    ]);
-  }
-
-  // ---------- Remove volume ----------
-
-  function removeVolume(id: string) {
-    setVolumes((prev) => prev.filter((v) => v.id !== id));
-  }
-
-  // ---------- Publish single volume ----------
-
-  async function publishVolume(volId: string, data: Partial<Book>) {
-    setVolumes((prev) =>
-      prev.map((v) =>
-        v.id === volId ? { ...v, status: 'publishing' as const, expanded: false } : v
-      )
-    );
-
-    try {
-      const bookData = {
-        ...data,
-        collection_id: collectionId,
-        collection_name: collectionName,
-        collection_volume: volumes.find((v) => v.id === volId)?.volumeNumber || 1,
-        collection_total_volumes: volumes.length,
-        collection_discount_pct: discountPct,
-      };
-
-      // If the form data doesn't have media, use the shared collection media
-      if (!bookData.media || (Array.isArray(bookData.media) && bookData.media.length === 0)) {
-        bookData.media = media;
-        bookData.photo_url = media[0]?.url || '';
-      }
-
-      const res = await fetch('/api/books', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(bookData),
-      });
-
-      if (!res.ok) {
-        const err = await res.json();
-        throw new Error(err.error || 'Erro ao publicar');
-      }
-
-      setVolumes((prev) =>
-        prev.map((v) =>
-          v.id === volId ? { ...v, status: 'published' as const } : v
-        )
-      );
-    } catch (err) {
-      setVolumes((prev) =>
-        prev.map((v) =>
-          v.id === volId
-            ? {
-                ...v,
-                status: 'ready' as const,
-                error: err instanceof Error ? err.message : 'Erro ao publicar',
-              }
-            : v
-        )
-      );
-      alert(`Erro ao publicar: ${err instanceof Error ? err.message : 'Erro desconhecido'}`);
+    if (!res.ok) {
+      const err = await res.json();
+      alert(err.error || 'Erro ao publicar');
+      return;
     }
-  }
 
-  // ---------- Check if all published ----------
-
-  const allPublished = volumes.length > 0 && readyCount === 0 && publishedCount === volumes.length;
-
-  if (allPublished && phase !== 'done') {
     setPhase('done');
   }
 
@@ -235,9 +233,9 @@ export default function ColecaoPage() {
     <div>
       <div className="flex items-center justify-between mb-6">
         <div>
-          <h1 className="text-xl font-bold text-gray-900">Adicionar colecao</h1>
+          <h1 className="text-xl font-bold text-gray-900">Criar colecao</h1>
           <p className="text-sm text-warm-500 mt-1">
-            Tire uma foto da colecao e a IA identifica cada volume automaticamente.
+            Venda uma colecao de livros como um unico anuncio.
           </p>
         </div>
         <Link
@@ -248,10 +246,10 @@ export default function ColecaoPage() {
         </Link>
       </div>
 
-      {/* Phase: Upload */}
-      {(phase === 'upload' || phase === 'analyzing') && (
+      {/* Phase: Setup */}
+      {(phase === 'setup' || phase === 'analyzing') && (
         <div className="space-y-6">
-          {/* Media upload */}
+          {/* 1. Collection photo */}
           <div>
             <label className="block text-sm font-medium text-warm-700 mb-2">
               Fotos da colecao
@@ -259,8 +257,179 @@ export default function ColecaoPage() {
             <MediaUploader items={media} onChange={setMedia} />
           </div>
 
-          {/* Condition */}
+          {/* 2. Condition */}
           <ConditionSelector value={condition} onChange={setCondition} required />
+
+          {/* 3. Mode toggle */}
+          <div>
+            <label className="block text-sm font-medium text-warm-700 mb-2">
+              Os livros da colecao ja foram cadastrados individualmente?
+            </label>
+            <div className="flex gap-2">
+              <button
+                type="button"
+                onClick={() => setMode('with-books')}
+                className={`flex-1 py-3 px-4 rounded-xl text-sm font-medium transition border-2 ${
+                  mode === 'with-books'
+                    ? 'border-purple-500 bg-purple-50 text-purple-700'
+                    : 'border-warm-200 text-warm-500 hover:border-warm-300'
+                }`}
+              >
+                <span className="block font-semibold">Sim, selecionar livros</span>
+                <span className="block text-xs mt-0.5 opacity-70">
+                  Vou escolher os livros ja cadastrados
+                </span>
+              </button>
+              <button
+                type="button"
+                onClick={() => setMode('collection-only')}
+                className={`flex-1 py-3 px-4 rounded-xl text-sm font-medium transition border-2 ${
+                  mode === 'collection-only'
+                    ? 'border-purple-500 bg-purple-50 text-purple-700'
+                    : 'border-warm-200 text-warm-500 hover:border-warm-300'
+                }`}
+              >
+                <span className="block font-semibold">Nao, vender so a colecao</span>
+                <span className="block text-xs mt-0.5 opacity-70">
+                  A IA identifica tudo pela foto
+                </span>
+              </button>
+            </div>
+          </div>
+
+          {/* 4. Discount (only with-books mode) */}
+          {mode === 'with-books' && (
+            <div>
+              <label className="block text-sm font-medium text-warm-700 mb-1">
+                Desconto da colecao (%)
+              </label>
+              <input
+                type="number"
+                value={discountPct}
+                onChange={(e) => setDiscountPct(parseInt(e.target.value) || 0)}
+                min={0}
+                max={50}
+                className="w-24 px-3 py-2 rounded-lg border border-warm-200 text-sm text-warm-900 outline-none focus:ring-2 focus:ring-navy-200"
+              />
+            </div>
+          )}
+
+          {/* 5. Select books (only with-books mode) */}
+          {mode === 'with-books' && (
+            <div>
+              <label className="block text-sm font-medium text-warm-700 mb-2">
+                Selecione os livros da colecao
+              </label>
+
+              <input
+                type="text"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                placeholder="Buscar por titulo ou autor..."
+                className="w-full px-4 py-2.5 rounded-xl border border-warm-200 text-sm text-warm-900 outline-none focus:ring-2 focus:ring-navy-200 mb-3"
+              />
+
+              {selectedBookIds.size > 0 && (
+                <div className="bg-purple-50 border border-purple-200 rounded-xl p-3 mb-3">
+                  <p className="text-sm font-medium text-purple-700">
+                    {selectedBookIds.size}{' '}
+                    {selectedBookIds.size === 1 ? 'livro selecionado' : 'livros selecionados'}
+                  </p>
+                  <p className="text-xs text-purple-500 mt-0.5">
+                    Total individual:{' '}
+                    {formatPrice(selectedBooks.reduce((sum, b) => sum + b.price_cents, 0))}
+                    {' → '}
+                    Com {discountPct}% desconto:{' '}
+                    <span className="font-semibold">
+                      {formatPrice(
+                        Math.round(
+                          selectedBooks.reduce((sum, b) => sum + b.price_cents, 0) *
+                            (1 - discountPct / 100)
+                        )
+                      )}
+                    </span>
+                  </p>
+                </div>
+              )}
+
+              {loadingBooks ? (
+                <div className="flex justify-center py-8">
+                  <div className="w-6 h-6 border-3 border-navy-600 border-t-transparent rounded-full animate-spin" />
+                </div>
+              ) : filteredBooks.length === 0 ? (
+                <p className="text-sm text-warm-400 text-center py-4">
+                  {searchQuery ? 'Nenhum livro encontrado.' : 'Nenhum livro disponivel.'}
+                </p>
+              ) : (
+                <div className="space-y-1 max-h-80 overflow-y-auto rounded-xl border border-warm-200">
+                  {filteredBooks.map((book) => {
+                    const isSelected = selectedBookIds.has(book.id);
+                    return (
+                      <button
+                        key={book.id}
+                        type="button"
+                        onClick={() => toggleBook(book.id)}
+                        className={`w-full flex items-center gap-3 p-2.5 text-left transition ${
+                          isSelected
+                            ? 'bg-purple-50 border-l-4 border-purple-500'
+                            : 'hover:bg-warm-50 border-l-4 border-transparent'
+                        }`}
+                      >
+                        <div
+                          className={`w-5 h-5 rounded border-2 flex items-center justify-center flex-shrink-0 transition ${
+                            isSelected ? 'bg-purple-600 border-purple-600' : 'border-warm-300'
+                          }`}
+                        >
+                          {isSelected && (
+                            <svg
+                              className="w-3 h-3 text-white"
+                              fill="none"
+                              stroke="currentColor"
+                              viewBox="0 0 24 24"
+                            >
+                              <path
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                                strokeWidth={3}
+                                d="M5 13l4 4L19 7"
+                              />
+                            </svg>
+                          )}
+                        </div>
+
+                        <div className="w-10 h-10 rounded bg-gray-100 overflow-hidden flex-shrink-0 relative">
+                          {book.photo_url ? (
+                            <Image
+                              src={book.photo_url}
+                              alt={book.title}
+                              fill
+                              className="object-cover"
+                              sizes="40px"
+                            />
+                          ) : (
+                            <div className="w-full h-full flex items-center justify-center text-gray-300">
+                              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
+                              </svg>
+                            </div>
+                          )}
+                        </div>
+
+                        <div className="flex-1 min-w-0">
+                          <p className="text-sm font-medium text-gray-900 truncate">{book.title}</p>
+                          <p className="text-xs text-gray-500 truncate">{book.author}</p>
+                        </div>
+
+                        <span className="text-sm font-semibold text-gray-700 flex-shrink-0">
+                          {formatPrice(book.price_cents)}
+                        </span>
+                      </button>
+                    );
+                  })}
+                </div>
+              )}
+            </div>
+          )}
 
           {/* Analyze button */}
           <button
@@ -280,24 +449,28 @@ export default function ColecaoPage() {
           </button>
           {!canAnalyze && !analyzing && (
             <p className="text-xs text-warm-400 text-center -mt-4">
-              {!hasImages && !condition
-                ? 'Adicione fotos e selecione a condição para analisar'
-                : !hasImages
-                  ? 'Adicione pelo menos uma foto para analisar'
-                  : 'Selecione a condição dos livros para analisar'}
+              {!hasImages
+                ? 'Adicione a foto da colecao'
+                : !condition
+                  ? 'Selecione a condição'
+                  : mode === 'with-books' && selectedBookIds.size < 2
+                    ? 'Selecione pelo menos 2 livros'
+                    : ''}
             </p>
           )}
 
-          {/* Analysis loading */}
           {analyzing && (
             <div className="bg-blue-50 rounded-2xl p-6 text-center">
               <div className="w-10 h-10 border-4 border-blue-600 border-t-transparent rounded-full animate-spin mx-auto mb-3" />
-              <p className="text-blue-700 font-medium">Analisando colecao com IA...</p>
-              <p className="text-blue-500 text-sm mt-1">Identificando volumes individualmente</p>
+              <p className="text-blue-700 font-medium">Gerando anuncio da colecao...</p>
+              <p className="text-blue-500 text-sm mt-1">
+                {mode === 'with-books'
+                  ? `Combinando ${selectedBookIds.size} livros com ${discountPct}% de desconto`
+                  : 'Identificando volumes pela foto'}
+              </p>
             </div>
           )}
 
-          {/* Error */}
           {analysisError && (
             <div className="bg-red-50 rounded-2xl p-4">
               <p className="text-red-700 text-sm font-medium">Erro na analise</p>
@@ -308,168 +481,39 @@ export default function ColecaoPage() {
       )}
 
       {/* Phase: Review */}
-      {(phase === 'review' || phase === 'done') && (
-        <div className="space-y-4">
-          {/* Collection header */}
-          <div className="bg-purple-50 border border-purple-200 rounded-2xl p-4 space-y-3">
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-              <div>
-                <label className="block text-xs font-medium text-purple-700 mb-1">
-                  Nome da colecao
-                </label>
-                <input
-                  type="text"
-                  value={collectionName}
-                  onChange={(e) => setCollectionName(e.target.value)}
-                  className="w-full px-3 py-2 rounded-lg border border-purple-200 text-sm text-warm-900 outline-none focus:ring-2 focus:ring-purple-300"
-                />
-              </div>
-              <div>
-                <label className="block text-xs font-medium text-purple-700 mb-1">
-                  Desconto da colecao (%)
-                </label>
-                <input
-                  type="number"
-                  value={discountPct}
-                  onChange={(e) => applyDiscount(parseInt(e.target.value) || 0)}
-                  min={0}
-                  max={50}
-                  className="w-full px-3 py-2 rounded-lg border border-purple-200 text-sm text-warm-900 outline-none focus:ring-2 focus:ring-purple-300"
-                />
-              </div>
-            </div>
-            <div className="flex items-center gap-4 text-xs text-purple-600">
-              <span>{volumes.length} volumes</span>
-              <span>{publishedCount} publicados</span>
-              <span>{readyCount} prontos</span>
-            </div>
+      {phase === 'review' && collectionFormData && (
+        <div>
+          <div className="bg-purple-50 border border-purple-200 rounded-2xl p-3 mb-4">
+            <p className="text-xs text-purple-600">
+              {mode === 'with-books'
+                ? `Colecao com ${selectedBooks.length} livros — ${discountPct}% de desconto. Fotos dos livros individuais foram adicionadas automaticamente.`
+                : 'Colecao completa identificada pela IA. Revise os dados antes de publicar.'}
+            </p>
           </div>
-
-          {/* Volume cards */}
-          <div className="space-y-2">
-            {volumes.map((vol) => (
-              <div
-                key={vol.id}
-                className={`bg-white rounded-xl border overflow-hidden transition-all ${
-                  vol.status === 'published'
-                    ? 'border-green-200 opacity-60'
-                    : 'border-gray-100'
-                }`}
-              >
-                {/* Collapsed header */}
-                <div className="p-3 flex items-center gap-3">
-                  <div className="w-8 h-8 rounded-full bg-purple-100 flex items-center justify-center flex-shrink-0">
-                    <span className="text-xs font-bold text-purple-700">V{vol.volumeNumber}</span>
-                  </div>
-
-                  <div className="flex-1 min-w-0">
-                    <h3 className="font-medium text-gray-900 text-sm truncate">
-                      {vol.formData.title || `Volume ${vol.volumeNumber}`}
-                    </h3>
-                    <div className="flex items-center gap-2 mt-0.5">
-                      {vol.formData.price_cents ? (
-                        <span className="text-sm font-semibold text-gray-900">
-                          R$ {(vol.formData.price_cents / 100).toFixed(2).replace('.', ',')}
-                        </span>
-                      ) : null}
-                      {vol.formData.author && (
-                        <span className="text-xs text-warm-400 truncate">{vol.formData.author}</span>
-                      )}
-                    </div>
-                    {vol.error && (
-                      <p className="text-xs text-red-500 mt-0.5">{vol.error}</p>
-                    )}
-                  </div>
-
-                  <div className="flex items-center gap-1 flex-shrink-0">
-                    {vol.status === 'published' && (
-                      <span className="text-xs bg-green-100 text-green-700 px-2 py-1 rounded-full font-medium">
-                        Publicado
-                      </span>
-                    )}
-                    {vol.status === 'publishing' && (
-                      <div className="flex items-center gap-1.5 text-xs text-navy-600">
-                        <div className="w-3.5 h-3.5 border-2 border-navy-600 border-t-transparent rounded-full animate-spin" />
-                        Publicando...
-                      </div>
-                    )}
-                    {vol.status === 'ready' && !vol.expanded && (
-                      <button
-                        onClick={() =>
-                          setVolumes((prev) =>
-                            prev.map((v) =>
-                              v.id === vol.id ? { ...v, expanded: true } : v
-                            )
-                          )
-                        }
-                        className="px-3 py-1.5 text-xs font-medium bg-navy-700 text-white rounded-lg hover:bg-navy-600 transition"
-                      >
-                        Revisar
-                      </button>
-                    )}
-                    {vol.status === 'ready' && (
-                      <button
-                        onClick={() => removeVolume(vol.id)}
-                        className="p-2 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition"
-                        title="Remover volume"
-                      >
-                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                        </svg>
-                      </button>
-                    )}
-                  </div>
-                </div>
-
-                {/* Expanded: BookForm */}
-                {vol.expanded && vol.status === 'ready' && (
-                  <div className="border-t border-gray-100 p-4">
-                    <div className="max-w-2xl">
-                      <BookForm
-                        initialData={{
-                          ...vol.formData,
-                          media,
-                          photo_url: media[0]?.url || '',
-                        }}
-                        onSubmit={async (data) => {
-                          await publishVolume(vol.id, data);
-                        }}
-                        submitLabel="Publicar volume"
-                      />
-                    </div>
-                  </div>
-                )}
-              </div>
-            ))}
+          <div className="max-w-2xl">
+            <BookForm
+              initialData={{
+                ...collectionFormData,
+                media: collectionMedia,
+                photo_url: collectionMedia[0]?.url || '',
+              }}
+              onSubmit={handlePublish}
+              submitLabel="Publicar colecao"
+            />
           </div>
+        </div>
+      )}
 
-          {/* Add volume button */}
-          {phase === 'review' && (
-            <button
-              onClick={addVolume}
-              className="w-full py-3 border-2 border-dashed border-warm-300 rounded-2xl text-warm-500 hover:border-purple-400 hover:text-purple-600 transition-colors flex items-center justify-center gap-2"
-            >
-              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
-              </svg>
-              <span className="text-sm font-medium">Adicionar volume</span>
-            </button>
-          )}
-
-          {/* All published */}
-          {phase === 'done' && (
-            <div className="bg-green-50 border border-green-200 rounded-2xl p-6 text-center">
-              <svg className="w-10 h-10 text-green-500 mx-auto mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-              </svg>
-              <p className="font-semibold text-green-800">
-                Colecao &quot;{collectionName}&quot; publicada com {publishedCount} volumes!
-              </p>
-              <Link href="/admin" className="text-sm text-green-600 hover:underline mt-2 inline-block">
-                Voltar ao Dashboard
-              </Link>
-            </div>
-          )}
+      {/* Phase: Done */}
+      {phase === 'done' && (
+        <div className="bg-green-50 border border-green-200 rounded-2xl p-6 text-center">
+          <svg className="w-10 h-10 text-green-500 mx-auto mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+          </svg>
+          <p className="font-semibold text-green-800">Colecao publicada com sucesso!</p>
+          <Link href="/admin" className="text-sm text-green-600 hover:underline mt-2 inline-block">
+            Voltar ao Dashboard
+          </Link>
         </div>
       )}
     </div>

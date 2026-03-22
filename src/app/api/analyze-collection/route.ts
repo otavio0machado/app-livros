@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 import { isAuthenticated } from '@/lib/auth';
-import { analyzeCollectionImage } from '@/lib/gemini';
+import { analyzeCollection } from '@/lib/gemini';
 
 export async function POST(request: Request) {
   const authenticated = await isAuthenticated();
@@ -9,7 +9,7 @@ export async function POST(request: Request) {
   }
 
   try {
-    const { imageBase64, mimeType, condition } = await request.json();
+    const { imageBase64, mimeType, condition, books, discountPct } = await request.json();
 
     if (!imageBase64 || !mimeType) {
       return NextResponse.json(
@@ -18,7 +18,13 @@ export async function POST(request: Request) {
       );
     }
 
-    const analysis = await analyzeCollectionImage(imageBase64, mimeType, condition);
+    const analysis = await analyzeCollection(
+      imageBase64,
+      mimeType,
+      books && Array.isArray(books) && books.length > 0 ? books : undefined,
+      condition,
+      discountPct
+    );
 
     return NextResponse.json(analysis);
   } catch (error) {
