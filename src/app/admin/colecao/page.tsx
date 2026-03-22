@@ -58,6 +58,7 @@ export default function ColecaoPage() {
   // Collection review
   const [collFormData, setCollFormData] = useState<Partial<Book> | null>(null);
   const [collFinalMedia, setCollFinalMedia] = useState<MediaItem[]>([]);
+  const [fullPriceDisplay, setFullPriceDisplay] = useState('');
 
   // Load existing books
   useEffect(() => {
@@ -289,6 +290,20 @@ export default function ColecaoPage() {
     setPhase('review');
   }
 
+  function handleFullPriceChange(value: string) {
+    setFullPriceDisplay(value);
+    const fullCents = Math.round(parseFloat(value.replace(',', '.') || '0') * 100);
+    const discountedCents = Math.round(fullCents * (1 - discountPct / 100));
+    setCollFormData((prev) => prev ? { ...prev, price_cents: discountedCents } : prev);
+  }
+
+  function handleReviewDiscountChange(newPct: number) {
+    setDiscountPct(newPct);
+    const fullCents = Math.round(parseFloat(fullPriceDisplay.replace(',', '.') || '0') * 100);
+    const discountedCents = Math.round(fullCents * (1 - newPct / 100));
+    setCollFormData((prev) => prev ? { ...prev, price_cents: discountedCents, collection_discount_pct: newPct } : prev);
+  }
+
   function buildCollectionFormData(
     analysis: GeminiCollectionAnalysis,
     existingBooks?: Book[],
@@ -301,11 +316,18 @@ export default function ColecaoPage() {
         ? [...new Set(slots.map((s) => s.formData.author).filter(Boolean))].join(', ')
         : '';
 
+    // Calculate full price (before discount) from the suggested price
+    const discountedPrice = analysis.suggested_price_cents;
+    const fullPrice = discountPct > 0
+      ? Math.round(discountedPrice / (1 - discountPct / 100))
+      : discountedPrice;
+    setFullPriceDisplay((fullPrice / 100).toFixed(2));
+
     setCollFormData({
       type: 'Livro',
       title: analysis.title,
       description: analysis.description,
-      price_cents: analysis.suggested_price_cents,
+      price_cents: discountedPrice,
       category: analysis.category,
       condition_detail: collCondition,
       weight_kg: analysis.weight_kg || 0,
@@ -761,8 +783,48 @@ export default function ColecaoPage() {
                       : 'Colecao identificada pela IA. Revise antes de publicar.'}
                 </p>
               </div>
+
+              {/* Price calculator */}
+              {mode !== 'collection-only' && (
+                <div className="bg-white border border-warm-200 rounded-2xl p-4 mb-4">
+                  <label className="block text-sm font-medium text-warm-700 mb-3">Calculo do preco</label>
+                  <div className="grid grid-cols-3 gap-3 items-end">
+                    <div>
+                      <label className="block text-xs text-warm-500 mb-1">Preco cheio (R$)</label>
+                      <input
+                        type="text"
+                        value={fullPriceDisplay}
+                        onChange={(e) => handleFullPriceChange(e.target.value)}
+                        placeholder="100.00"
+                        className="w-full px-3 py-2 rounded-lg border border-warm-200 text-sm text-warm-900 outline-none focus:ring-2 focus:ring-navy-200"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-xs text-warm-500 mb-1">Desconto (%)</label>
+                      <input
+                        type="number"
+                        value={discountPct}
+                        onChange={(e) => handleReviewDiscountChange(parseInt(e.target.value) || 0)}
+                        min={0}
+                        max={50}
+                        className="w-full px-3 py-2 rounded-lg border border-warm-200 text-sm text-warm-900 outline-none focus:ring-2 focus:ring-navy-200"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-xs text-warm-500 mb-1">Preco final</label>
+                      <div className="px-3 py-2 rounded-lg bg-green-50 border border-green-200 text-sm font-semibold text-green-700">
+                        {collFormData.price_cents
+                          ? formatPrice(collFormData.price_cents)
+                          : 'R$ 0,00'}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              )}
+
               <div className="max-w-2xl">
                 <BookForm
+                  key={collFormData.price_cents}
                   initialData={{ ...collFormData, media: collFinalMedia, photo_url: collFinalMedia[0]?.url || '' }}
                   onSubmit={handlePublishCollection}
                   submitLabel="Publicar colecao"

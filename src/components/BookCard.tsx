@@ -58,6 +58,11 @@ export default function BookCard({ book }: { book: Book }) {
               </svg>
             </div>
           )}
+          {book.collection_discount_pct && book.collection_discount_pct > 0 ? (
+            <span className="absolute top-2 left-2 bg-red-500 text-white text-xs font-bold px-2 py-0.5 rounded-lg">
+              -{book.collection_discount_pct}%
+            </span>
+          ) : null}
         </div>
 
         {/* Info */}
@@ -79,10 +84,24 @@ export default function BookCard({ book }: { book: Book }) {
           </div>
 
           <div className="flex items-end justify-between mt-3">
-            <p className="text-warm-900 font-semibold">
-              <span className="text-xs font-normal text-warm-500">R$</span>{' '}
-              {formatPrice(book.price_cents)}
-            </p>
+            <div>
+              {book.collection_discount_pct && book.collection_discount_pct > 0 ? (
+                <>
+                  <p className="text-warm-400 text-xs line-through">
+                    R$ {formatPrice(Math.round(book.price_cents / (1 - book.collection_discount_pct / 100)))}
+                  </p>
+                  <p className="text-warm-900 font-semibold">
+                    <span className="text-xs font-normal text-warm-500">R$</span>{' '}
+                    {formatPrice(book.price_cents)}
+                  </p>
+                </>
+              ) : (
+                <p className="text-warm-900 font-semibold">
+                  <span className="text-xs font-normal text-warm-500">R$</span>{' '}
+                  {formatPrice(book.price_cents)}
+                </p>
+              )}
+            </div>
             <button
               onClick={handleAdd}
               disabled={inCart}

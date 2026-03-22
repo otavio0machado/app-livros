@@ -92,9 +92,23 @@ export default async function LivroPage({ params }: { params: Promise<{ id: stri
           </div>
 
           <div className="flex items-center gap-3">
-            <p className="text-2xl font-bold text-warm-900">
-              <span className="text-sm font-normal text-warm-500">R$</span> {formatPrice(book.price_cents)}
-            </p>
+            {book.collection_discount_pct && book.collection_discount_pct > 0 ? (
+              <>
+                <p className="text-lg text-warm-400 line-through">
+                  R$ {formatPrice(Math.round(book.price_cents / (1 - book.collection_discount_pct / 100)))}
+                </p>
+                <p className="text-2xl font-bold text-warm-900">
+                  <span className="text-sm font-normal text-warm-500">R$</span> {formatPrice(book.price_cents)}
+                </p>
+                <span className="bg-red-500 text-white text-xs font-bold px-2 py-1 rounded-lg">
+                  -{book.collection_discount_pct}%
+                </span>
+              </>
+            ) : (
+              <p className="text-2xl font-bold text-warm-900">
+                <span className="text-sm font-normal text-warm-500">R$</span> {formatPrice(book.price_cents)}
+              </p>
+            )}
           </div>
 
           {/* Badges */}
