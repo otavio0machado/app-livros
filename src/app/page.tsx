@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import Logo from '@/components/Logo';
 
 export default function LandingPage() {
   return (
@@ -6,9 +7,7 @@ export default function LandingPage() {
       {/* Nav */}
       <nav className="sticky top-0 z-40 bg-warm-50/80 backdrop-blur-sm border-b border-warm-200/60">
         <div className="max-w-3xl mx-auto px-5 h-14 flex items-center justify-between">
-          <Link href="/" className="text-warm-800 font-semibold tracking-tight">
-            livros do otávio
-          </Link>
+          <Logo />
           <Link
             href="/loja"
             className="text-sm text-warm-600 hover:text-warm-900 transition-colors"
@@ -131,7 +130,7 @@ export default function LandingPage() {
       {/* Footer */}
       <footer className="border-t border-warm-200 py-8">
         <div className="max-w-3xl mx-auto px-5 flex flex-col sm:flex-row items-center justify-between gap-3 text-sm text-warm-400">
-          <p>livros do otávio</p>
+          <p className="font-medium text-navy-700">myshelf.com.br</p>
           <p>feito com carinho para desapegar dos livros</p>
         </div>
       </footer>

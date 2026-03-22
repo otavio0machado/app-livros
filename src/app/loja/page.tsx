@@ -1,5 +1,6 @@
 import { Suspense } from 'react';
 import Link from 'next/link';
+import Logo from '@/components/Logo';
 import SearchBar from '@/components/SearchBar';
 import BookGrid from '@/components/BookGrid';
 import type { Book } from '@/types';
@@ -27,7 +28,14 @@ async function getBooks(searchParams: Record<string, string>): Promise<Book[]> {
       console.error('Supabase error:', error.message);
       return [];
     }
-    return (data || []) as Book[];
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    return (data || []).map((row: any) => {
+      if (row.media && typeof row.media === 'string') {
+        try { row.media = JSON.parse(row.media); } catch { row.media = []; }
+      }
+      if (!row.media) row.media = [];
+      return row;
+    }) as Book[];
   } catch (err) {
     console.error('Error fetching books:', err);
     return [];
@@ -47,9 +55,7 @@ export default async function LojaPage({
       {/* Header */}
       <header className="sticky top-0 z-40 bg-warm-50/80 backdrop-blur-sm border-b border-warm-200/60">
         <div className="max-w-4xl mx-auto px-5 h-14 flex items-center justify-between">
-          <Link href="/" className="text-warm-800 font-semibold tracking-tight">
-            livros do otávio
-          </Link>
+          <Logo />
           <Link
             href="/carrinho"
             className="text-sm text-warm-600 hover:text-warm-900 transition-colors"

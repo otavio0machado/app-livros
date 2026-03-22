@@ -1,3 +1,9 @@
+export interface MediaItem {
+  url: string;
+  type: 'image' | 'video';
+  path: string;
+}
+
 export interface Book {
   id: number;
   type: 'Livro' | 'Apostila';
@@ -32,6 +38,7 @@ export interface Book {
   length_cm: number;
   height_cm: number;
   photo_url: string;
+  media: MediaItem[];
   subject: string;
   course_origin: string;
   status: 'available' | 'sold' | 'reserved';

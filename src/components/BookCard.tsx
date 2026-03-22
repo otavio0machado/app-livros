@@ -40,9 +40,9 @@ export default function BookCard({ book }: { book: Book }) {
       <div className="bg-white rounded-2xl border border-warm-200/80 overflow-hidden transition-shadow hover:shadow-md">
         {/* Image */}
         <div className="relative aspect-[3/4] bg-warm-100">
-          {book.photo_url ? (
+          {(book.media?.[0]?.url || book.photo_url) ? (
             <Image
-              src={book.photo_url}
+              src={book.media?.[0]?.url || book.photo_url}
               alt={book.title}
               fill
               className="object-cover"

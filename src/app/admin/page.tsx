@@ -3,10 +3,26 @@
 import { useState, useEffect } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
-import type { Book } from '@/types';
+import type { Book, MediaItem } from '@/types';
 
 function formatPrice(cents: number): string {
   return `R$ ${(cents / 100).toFixed(2).replace('.', ',')}`;
+}
+
+function getMedia(book: Book): MediaItem[] {
+  if (Array.isArray(book.media) && book.media.length > 0) return book.media;
+  if (book.photo_url) return [{ url: book.photo_url, type: 'image', path: '' }];
+  return [];
+}
+
+async function downloadFile(url: string, filename: string) {
+  const res = await fetch(url);
+  const blob = await res.blob();
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = filename;
+  a.click();
+  URL.revokeObjectURL(a.href);
 }
 
 const STATUS_LABELS: Record<string, { label: string; color: string }> = {
@@ -120,8 +136,8 @@ export default function AdminDashboard() {
                 className="bg-white rounded-xl border border-gray-100 p-3 flex items-center gap-3"
               >
                 <div className="w-14 h-14 rounded-lg bg-gray-100 overflow-hidden flex-shrink-0 relative">
-                  {book.photo_url ? (
-                    <Image src={book.photo_url} alt={book.title} fill className="object-cover" sizes="56px" />
+                  {getMedia(book)[0]?.url ? (
+                    <Image src={getMedia(book)[0].url} alt={book.title} fill className="object-cover" sizes="56px" />
                   ) : (
                     <div className="w-full h-full flex items-center justify-center text-gray-300">
                       <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -159,6 +175,23 @@ export default function AdminDashboard() {
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
                     </svg>
                   </button>
+                  {getMedia(book).length > 0 && (
+                    <button
+                      onClick={() => {
+                        const media = getMedia(book);
+                        media.forEach((item, i) => {
+                          const ext = item.type === 'video' ? 'mp4' : 'jpg';
+                          downloadFile(item.url, `${book.title}-${i + 1}.${ext}`);
+                        });
+                      }}
+                      className="p-2 text-gray-400 hover:text-navy-600 hover:bg-navy-50 rounded-lg transition"
+                      title="Baixar mídias"
+                    >
+                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+                      </svg>
+                    </button>
+                  )}
                   <Link
                     href={`/admin/editar/${book.id}`}
                     className="p-2 text-gray-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition"

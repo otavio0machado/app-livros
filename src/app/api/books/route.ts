@@ -1,6 +1,14 @@
 import { NextResponse } from 'next/server';
-import { supabaseAdmin } from '@/lib/supabase';
+import { getSupabaseAdmin } from '@/lib/supabase';
 import { isAuthenticated } from '@/lib/auth';
+
+function parseMedia(row: Record<string, unknown>) {
+  if (row.media && typeof row.media === 'string') {
+    try { row.media = JSON.parse(row.media as string); } catch { row.media = []; }
+  }
+  if (!row.media) row.media = [];
+  return row;
+}
 
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url);
@@ -10,7 +18,8 @@ export async function GET(request: Request) {
   const subject = searchParams.get('subject') || '';
   const status = searchParams.get('status') || 'available';
 
-  let query = supabaseAdmin
+  const supabase = getSupabaseAdmin();
+  let query = supabase
     .from('books')
     .select('*')
     .order('created_at', { ascending: false });
@@ -31,7 +40,7 @@ export async function GET(request: Request) {
     return NextResponse.json({ error: error.message }, { status: 500 });
   }
 
-  return NextResponse.json(data);
+  return NextResponse.json((data || []).map(parseMedia));
 }
 
 export async function POST(request: Request) {
@@ -42,14 +51,21 @@ export async function POST(request: Request) {
 
   try {
     const body = await request.json();
-
-    // Map condition_detail to Shopee condition
     const condition = body.condition_detail?.startsWith('Novo') ? 'Novo' : 'Usado';
 
-    const { data, error } = await supabaseAdmin
+    // Serialize media array to JSON string for storage
+    const media = Array.isArray(body.media) ? JSON.stringify(body.media) : '[]';
+    const photo_url = Array.isArray(body.media) && body.media.length > 0
+      ? body.media[0].url
+      : body.photo_url || '';
+
+    const supabase = getSupabaseAdmin();
+    const { data, error } = await supabase
       .from('books')
       .insert({
         ...body,
+        media,
+        photo_url,
         condition,
         updated_at: new Date().toISOString(),
       })
@@ -60,7 +76,7 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: error.message }, { status: 500 });
     }
 
-    return NextResponse.json(data, { status: 201 });
+    return NextResponse.json(parseMedia(data), { status: 201 });
   } catch {
     return NextResponse.json({ error: 'Erro ao criar livro' }, { status: 500 });
   }

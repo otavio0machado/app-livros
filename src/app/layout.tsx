@@ -11,8 +11,8 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
-  title: "Livros do Otávio",
-  description: "Livros e apostilas usados com preço justo. Escolha, adicione ao carrinho e finalize pelo WhatsApp.",
+  title: "myshelf — livros e apostilas usados",
+  description: "Livros e apostilas usados com preço justo. Escolha, adicione ao carrinho e finalize pelo WhatsApp. myshelf.com.br",
 };
 
 export const viewport: Viewport = {

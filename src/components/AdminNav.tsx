@@ -21,8 +21,8 @@ export default function AdminNav() {
     <header className="bg-white border-b border-warm-200 sticky top-0 z-40">
       <div className="max-w-5xl mx-auto px-5 h-14 flex items-center justify-between">
         <div className="flex items-center gap-4">
-          <Link href="/admin" className="font-semibold text-warm-800 tracking-tight">
-            admin
+          <Link href="/admin" className="font-semibold text-navy-700 tracking-tight">
+            myshelf <span className="text-warm-400 font-normal">admin</span>
           </Link>
           <nav className="flex gap-1">
             {links.map((link) => (
