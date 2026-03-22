@@ -86,7 +86,7 @@ export default function BookCard({ book }: { book: Book }) {
               className={`text-xs px-2.5 py-1.5 rounded-lg font-medium transition-all ${
                 inCart
                   ? 'bg-warm-100 text-warm-400'
-                  : 'bg-warm-900 text-warm-50 hover:bg-warm-800 active:scale-95'
+                  : 'bg-navy-700 text-white hover:bg-navy-600 active:scale-95'
               }`}
             >
               {inCart ? 'no carrinho' : '+ adicionar'}

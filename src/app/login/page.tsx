@@ -56,7 +56,7 @@ export default function LoginPage() {
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               required
-              className="w-full px-4 py-3 rounded-xl border border-warm-200 bg-white focus:ring-2 focus:ring-olive-300 focus:border-olive-300 outline-none transition text-warm-800"
+              className="w-full px-4 py-3 rounded-xl border border-warm-200 bg-white focus:ring-2 focus:ring-navy-200 focus:border-navy-200 outline-none transition text-warm-800"
               placeholder="seu@email.com"
             />
           </div>
@@ -69,7 +69,7 @@ export default function LoginPage() {
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               required
-              className="w-full px-4 py-3 rounded-xl border border-warm-200 bg-white focus:ring-2 focus:ring-olive-300 focus:border-olive-300 outline-none transition text-warm-800"
+              className="w-full px-4 py-3 rounded-xl border border-warm-200 bg-white focus:ring-2 focus:ring-navy-200 focus:border-navy-200 outline-none transition text-warm-800"
               placeholder="••••••••"
             />
           </div>
@@ -81,7 +81,7 @@ export default function LoginPage() {
           <button
             type="submit"
             disabled={loading}
-            className="w-full py-3 bg-warm-900 text-warm-50 rounded-xl font-medium hover:bg-warm-800 transition-all disabled:opacity-50"
+            className="w-full py-3 bg-navy-700 text-white rounded-xl font-medium hover:bg-navy-600 transition-all disabled:opacity-50"
           >
             {loading ? 'Entrando...' : 'Entrar'}
           </button>

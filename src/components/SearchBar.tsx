@@ -47,7 +47,7 @@ export default function SearchBar() {
           placeholder="Buscar por título ou autor..."
           value={search}
           onChange={(e) => setSearch(e.target.value)}
-          className="w-full pl-10 pr-4 py-2.5 rounded-xl border border-warm-200 bg-white focus:ring-2 focus:ring-olive-300 focus:border-olive-300 outline-none transition text-warm-800 text-sm placeholder:text-warm-400"
+          className="w-full pl-10 pr-4 py-2.5 rounded-xl border border-warm-200 bg-white focus:ring-2 focus:ring-navy-200 focus:border-navy-200 outline-none transition text-warm-800 text-sm placeholder:text-warm-400"
         />
       </div>
 
@@ -55,7 +55,7 @@ export default function SearchBar() {
         <select
           value={type}
           onChange={(e) => setType(e.target.value)}
-          className="px-3 py-2 rounded-lg border border-warm-200 bg-white text-sm text-warm-700 outline-none focus:ring-2 focus:ring-olive-300"
+          className="px-3 py-2 rounded-lg border border-warm-200 bg-white text-sm text-warm-700 outline-none focus:ring-2 focus:ring-navy-200"
         >
           {TYPES.map((t) => (
             <option key={t} value={t === 'Todos' ? '' : t}>{t}</option>
@@ -65,7 +65,7 @@ export default function SearchBar() {
         <select
           value={category}
           onChange={(e) => setCategory(e.target.value)}
-          className="px-3 py-2 rounded-lg border border-warm-200 bg-white text-sm text-warm-700 outline-none focus:ring-2 focus:ring-olive-300 min-w-0 flex-1"
+          className="px-3 py-2 rounded-lg border border-warm-200 bg-white text-sm text-warm-700 outline-none focus:ring-2 focus:ring-navy-200 min-w-0 flex-1"
         >
           {CATEGORIES.map((c) => (
             <option key={c} value={c === 'Todos' ? '' : c}>{c}</option>

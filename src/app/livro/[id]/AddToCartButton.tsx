@@ -26,7 +26,7 @@ export default function AddToCartButton({ book }: { book: Book }) {
       className={`w-full py-3.5 rounded-xl font-medium text-base transition-all ${
         inCart
           ? 'bg-warm-100 text-warm-400'
-          : 'bg-warm-900 text-warm-50 hover:bg-warm-800 active:scale-[0.98]'
+          : 'bg-navy-700 text-white hover:bg-navy-600 active:scale-[0.98]'
       }`}
     >
       {inCart ? 'Já está no carrinho' : 'Adicionar ao carrinho'}

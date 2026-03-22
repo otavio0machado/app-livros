@@ -23,6 +23,17 @@
   --color-olive-800: #2d3720;
   --color-olive-900: #1c2315;
 
+  --color-navy-50:  #f0f3f7;
+  --color-navy-100: #dce4ef;
+  --color-navy-200: #b4c5d9;
+  --color-navy-300: #8aa3be;
+  --color-navy-400: #6482a3;
+  --color-navy-500: #476889;
+  --color-navy-600: #345170;
+  --color-navy-700: #1e3a5f;
+  --color-navy-800: #152d4a;
+  --color-navy-900: #0e1f35;
+
   --color-whatsapp: #25D366;
   --color-whatsapp-dark: #1fba59;
 
@@ -40,6 +51,6 @@ body {
 }
 
 ::selection {
-  background: var(--color-olive-200);
-  color: var(--color-olive-900);
+  background: var(--color-navy-200);
+  color: var(--color-navy-900);
 }

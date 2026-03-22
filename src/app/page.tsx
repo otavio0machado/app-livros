@@ -21,7 +21,7 @@ export default function LandingPage() {
       {/* Hero */}
       <section className="max-w-3xl mx-auto px-5 pt-20 pb-16 sm:pt-28 sm:pb-24">
         <div className="max-w-lg">
-          <p className="text-olive-600 text-sm font-medium mb-4 tracking-wide uppercase">
+          <p className="text-navy-600 text-sm font-medium mb-4 tracking-wide uppercase">
             Acervo pessoal
           </p>
           <h1 className="text-3xl sm:text-4xl font-bold text-warm-900 leading-tight tracking-tight">
@@ -34,7 +34,7 @@ export default function LandingPage() {
           <div className="mt-8 flex flex-col sm:flex-row gap-3">
             <Link
               href="/loja"
-              className="inline-flex items-center justify-center px-6 py-3.5 bg-warm-900 text-warm-50 rounded-xl font-medium hover:bg-warm-800 active:scale-[0.98] transition-all text-base"
+              className="inline-flex items-center justify-center px-6 py-3.5 bg-navy-700 text-white rounded-xl font-medium hover:bg-navy-600 active:scale-[0.98] transition-all text-base"
             >
               Ver livros disponíveis
             </Link>
@@ -54,7 +54,7 @@ export default function LandingPage() {
         </h2>
         <div className="grid sm:grid-cols-3 gap-8 sm:gap-6">
           <div>
-            <div className="w-10 h-10 rounded-full bg-olive-100 text-olive-700 flex items-center justify-center text-sm font-semibold mb-4">
+            <div className="w-10 h-10 rounded-full bg-navy-100 text-navy-700 flex items-center justify-center text-sm font-semibold mb-4">
               1
             </div>
             <h3 className="font-semibold text-warm-800 mb-1">Escolha os livros</h3>
@@ -63,7 +63,7 @@ export default function LandingPage() {
             </p>
           </div>
           <div>
-            <div className="w-10 h-10 rounded-full bg-olive-100 text-olive-700 flex items-center justify-center text-sm font-semibold mb-4">
+            <div className="w-10 h-10 rounded-full bg-navy-100 text-navy-700 flex items-center justify-center text-sm font-semibold mb-4">
               2
             </div>
             <h3 className="font-semibold text-warm-800 mb-1">Adicione ao carrinho</h3>
@@ -72,7 +72,7 @@ export default function LandingPage() {
             </p>
           </div>
           <div>
-            <div className="w-10 h-10 rounded-full bg-olive-100 text-olive-700 flex items-center justify-center text-sm font-semibold mb-4">
+            <div className="w-10 h-10 rounded-full bg-navy-100 text-navy-700 flex items-center justify-center text-sm font-semibold mb-4">
               3
             </div>
             <h3 className="font-semibold text-warm-800 mb-1">Finalize pelo WhatsApp</h3>
@@ -122,7 +122,7 @@ export default function LandingPage() {
         </p>
         <Link
           href="/loja"
-          className="inline-flex items-center justify-center px-8 py-4 bg-warm-900 text-warm-50 rounded-xl font-medium hover:bg-warm-800 active:scale-[0.98] transition-all text-base"
+          className="inline-flex items-center justify-center px-8 py-4 bg-navy-700 text-white rounded-xl font-medium hover:bg-navy-600 active:scale-[0.98] transition-all text-base"
         >
           Ver livros disponíveis
         </Link>
