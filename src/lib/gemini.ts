@@ -1,5 +1,6 @@
 import { GoogleGenAI } from '@google/genai';
 import type { GeminiAnalysis, GeminiCollectionAnalysis } from '@/types';
+import type { BatchBookAIAnalysis, BookImageRole } from '@/types/batch';
 
 let _ai: GoogleGenAI | null = null;
 
@@ -178,4 +179,139 @@ Seja preciso nos preços baseando-se no mercado brasileiro de usados.`;
   const text = response.candidates?.[0]?.content?.parts?.[0]?.text;
   if (!text) throw new Error('Sem resposta do Gemini');
   return JSON.parse(text) as GeminiCollectionAnalysis;
+}
+
+interface BatchImageInput {
+  imageBase64: string;
+  mimeType: string;
+  role: BookImageRole;
+}
+
+function normalizeBatchAnalysis(value: Partial<BatchBookAIAnalysis>): BatchBookAIAnalysis {
+  return {
+    type: value.type === 'Apostila' ? 'Apostila' : 'Livro',
+    title: value.title || null,
+    author: value.author || null,
+    publisher: value.publisher || null,
+    isbn: value.isbn || null,
+    edition: value.edition || null,
+    year: value.year || null,
+    language: value.language || null,
+    category: value.category || null,
+    cover_type: value.cover_type || null,
+    condition: value.condition || null,
+    visible_defects: Array.isArray(value.visible_defects) ? value.visible_defects : [],
+    condition_notes: value.condition_notes || null,
+    suggested_price_cents: typeof value.suggested_price_cents === 'number' ? value.suggested_price_cents : null,
+    weight_kg: typeof value.weight_kg === 'number' ? value.weight_kg : null,
+    width_cm: typeof value.width_cm === 'number' ? value.width_cm : null,
+    length_cm: typeof value.length_cm === 'number' ? value.length_cm : null,
+    height_cm: typeof value.height_cm === 'number' ? value.height_cm : null,
+    confidence: typeof value.confidence === 'number' ? Math.max(0, Math.min(1, value.confidence)) : 0,
+    field_confidence: value.field_confidence && typeof value.field_confidence === 'object'
+      ? value.field_confidence
+      : {},
+    warnings: Array.isArray(value.warnings) ? value.warnings : [],
+    needs_human_review: Boolean(value.needs_human_review),
+  };
+}
+
+export async function analyzeBookImagesForBatch(
+  images: BatchImageInput[],
+  condition?: string
+): Promise<BatchBookAIAnalysis> {
+  const ai = getAI();
+
+  const roleNames: Record<BookImageRole, string> = {
+    front_cover: 'capa frontal',
+    back_cover: 'contracapa',
+    spine: 'lombada',
+    isbn_page: 'pagina com ISBN/ficha catalografica',
+    defect: 'defeito ou marca visivel',
+    other: 'foto complementar',
+  };
+
+  const imageParts = images.flatMap((image, index) => [
+    {
+      text: `Imagem ${index + 1}: ${roleNames[image.role]}.`,
+    },
+    {
+      inlineData: {
+        mimeType: image.mimeType,
+        data: image.imageBase64,
+      },
+    },
+  ]);
+
+  const conditionInstruction = condition
+    ? `\nO vendedor informou previamente a condição geral como: "${condition}". Use isso como contexto, mas liste defeitos visiveis nas fotos.`
+    : '';
+
+  const response = await ai.models.generateContent({
+    model: 'gemini-2.5-flash',
+    contents: [
+      {
+        role: 'user',
+        parts: [
+          {
+            text: `Você é um catalogador profissional de livros usados para marketplaces no Brasil.
+Analise o conjunto de imagens de UM unico livro ou apostila. As imagens podem mostrar capa, contracapa, lombada, pagina de ISBN/ficha catalografica e defeitos.
+
+Regras obrigatorias:
+- Retorne somente JSON valido.
+- Não invente titulo, autor, editora, ISBN, edição ou ano. Se não estiver legivel, retorne null.
+- ISBN só pode ser retornado se estiver claramente visivel ou altamente confiavel.
+- Para categoria, escolha uma entre: Ficção, Não-Ficção, Infantil, Acadêmico, Autoajuda, Biografia, Romance, Terror, Fantasia, Ciência, História, Religião, Computadores e Tecnologia, Direito, Medicina, Engenharia, Vestibular, Outro.
+- Descreva defeitos visiveis com honestidade.
+- Use confidence geral e field_confidence entre 0 e 1.
+- Marque needs_human_review como true se algum campo essencial estiver incerto.
+${conditionInstruction}
+
+JSON esperado:
+{
+  "type": "Livro" ou "Apostila",
+  "title": string ou null,
+  "author": string ou null,
+  "publisher": string ou null,
+  "isbn": string ou null,
+  "edition": string ou null,
+  "year": string ou null,
+  "language": string ou null,
+  "category": string ou null,
+  "cover_type": "Capa Dura" ou "Brochura" ou "Espiral" ou null,
+  "condition": string ou null,
+  "visible_defects": string[],
+  "condition_notes": string ou null,
+  "suggested_price_cents": number ou null,
+  "weight_kg": number ou null,
+  "width_cm": number ou null,
+  "length_cm": number ou null,
+  "height_cm": number ou null,
+  "confidence": number,
+  "field_confidence": {
+    "title": number,
+    "author": number,
+    "publisher": number,
+    "isbn": number,
+    "year": number,
+    "condition": number,
+    "price": number
+  },
+  "warnings": string[],
+  "needs_human_review": boolean
+}`,
+          },
+          ...imageParts,
+        ],
+      },
+    ],
+    config: {
+      responseMimeType: 'application/json',
+      temperature: 0.15,
+    },
+  });
+
+  const text = response.candidates?.[0]?.content?.parts?.[0]?.text;
+  if (!text) throw new Error('Sem resposta do Gemini');
+  return normalizeBatchAnalysis(JSON.parse(text) as Partial<BatchBookAIAnalysis>);
 }

@@ -133,6 +133,12 @@ export default function AdminDashboard() {
             + Lote
           </Link>
           <Link
+            href="/admin/planilha"
+            className="px-3 sm:px-4 py-2 bg-orange-100 text-orange-700 rounded-xl text-xs sm:text-sm font-medium hover:bg-orange-200 transition whitespace-nowrap flex-shrink-0"
+          >
+            + Planilha Shopee
+          </Link>
+          <Link
             href="/admin/novo"
             className="px-3 sm:px-4 py-2 bg-blue-600 text-white rounded-xl text-xs sm:text-sm font-medium hover:bg-blue-700 transition whitespace-nowrap flex-shrink-0"
           >
