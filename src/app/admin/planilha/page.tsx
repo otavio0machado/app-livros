@@ -3,6 +3,7 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
+import type { Book, MediaItem } from '@/types';
 import type {
   BatchBookAIAnalysis,
   BatchBookImage,
@@ -13,6 +14,7 @@ import {
   BOOK_IMAGE_ROLE_HELP,
   BOOK_IMAGE_ROLE_LABELS,
   buildShopeeListingDraft,
+  buildShopeeListingDraftFromBook,
   validateShopeeListing,
 } from '@/lib/shopee-bulk';
 import { createConcurrencyLimiter, resizeImageForAnalysis } from '@/lib/bulk-utils';
@@ -44,6 +46,7 @@ type LocalBatchBookImage = BatchBookImage & { analysisBase64?: string };
 
 interface BatchBookDraft {
   id: string;
+  sourceBookId?: number;
   condition: string;
   images: LocalBatchBookImage[];
   analysis: BatchBookAIAnalysis | null;
@@ -118,6 +121,26 @@ function getImageUrlsForShopee(images: LocalBatchBookImage[]) {
     .slice(0, 9);
 }
 
+function getBookMedia(book: Book): MediaItem[] {
+  if (Array.isArray(book.media) && book.media.length > 0) {
+    return book.media.filter((item) => item.type === 'image');
+  }
+  if (book.photo_url) {
+    return [{ url: book.photo_url, type: 'image', path: '' }];
+  }
+  return [];
+}
+
+function mediaToBatchImages(media: MediaItem[]): LocalBatchBookImage[] {
+  return media.slice(0, 9).map((item, index) => ({
+    id: makeId(),
+    role: index === 0 ? 'front_cover' : 'other',
+    url: item.url,
+    path: item.path || '',
+    mimeType: 'image/jpeg',
+  }));
+}
+
 async function urlToBase64(url: string): Promise<string> {
   const response = await fetch(url);
   const blob = await response.blob();
@@ -174,6 +197,11 @@ export default function ShopeeSheetPage() {
   const [hydrated, setHydrated] = useState(false);
   const [exporting, setExporting] = useState(false);
   const [globalError, setGlobalError] = useState('');
+  const [showExistingPicker, setShowExistingPicker] = useState(false);
+  const [existingBooks, setExistingBooks] = useState<Book[]>([]);
+  const [existingSearch, setExistingSearch] = useState('');
+  const [selectedExistingIds, setSelectedExistingIds] = useState<Set<number>>(new Set());
+  const [loadingExistingBooks, setLoadingExistingBooks] = useState(false);
   const limiterRef = useRef(createConcurrencyLimiter(2));
 
   useEffect(() => {
@@ -217,6 +245,20 @@ export default function ShopeeSheetPage() {
     return { withImages, ready, needsReview, errors };
   }, [books]);
 
+  const filteredExistingBooks = useMemo(() => {
+    const query = existingSearch.trim().toLowerCase();
+    if (!query) return existingBooks;
+    return existingBooks.filter((book) => {
+      return [
+        book.title,
+        book.author,
+        book.publisher,
+        book.isbn,
+        book.category,
+      ].some((value) => value?.toLowerCase().includes(query));
+    });
+  }, [existingBooks, existingSearch]);
+
   function addBook() {
     setBooks((prev) => [
       ...prev,
@@ -230,6 +272,67 @@ export default function ShopeeSheetPage() {
         error: '',
       },
     ]);
+  }
+
+  async function openExistingPicker() {
+    setShowExistingPicker((prev) => !prev);
+    setGlobalError('');
+
+    if (existingBooks.length > 0 || loadingExistingBooks) return;
+
+    setLoadingExistingBooks(true);
+    try {
+      const res = await fetch('/api/books?status=');
+      if (!res.ok) throw new Error('Erro ao carregar livros do site');
+      const data = await res.json();
+      setExistingBooks(Array.isArray(data) ? data : []);
+    } catch (error) {
+      setGlobalError(error instanceof Error ? error.message : 'Erro ao carregar livros');
+    } finally {
+      setLoadingExistingBooks(false);
+    }
+  }
+
+  function toggleExistingSelection(id: number) {
+    setSelectedExistingIds((prev) => {
+      const next = new Set(prev);
+      if (next.has(id)) next.delete(id);
+      else next.add(id);
+      return next;
+    });
+  }
+
+  function importExistingBooks() {
+    const selected = existingBooks.filter((book) => selectedExistingIds.has(book.id));
+    if (selected.length === 0) return;
+
+    setBooks((prev) => {
+      const existingSourceIds = new Set(prev.map((book) => book.sourceBookId).filter(Boolean));
+      const additions = selected
+        .filter((book) => !existingSourceIds.has(book.id))
+        .map((book) => {
+          const images = mediaToBatchImages(getBookMedia(book));
+          const listing = buildShopeeListingDraftFromBook(book, images);
+          const validation = validateShopeeListing(listing);
+
+          return {
+            id: makeId(),
+            sourceBookId: book.id,
+            condition: book.condition_detail || '',
+            images,
+            analysis: null,
+            listing,
+            status: validation.valid ? 'ready' as const : 'review' as const,
+            error: '',
+          };
+        });
+
+      if (additions.length === 0) return prev;
+      return [...prev, ...additions];
+    });
+
+    setSelectedExistingIds(new Set());
+    setShowExistingPicker(false);
   }
 
   function clearBatch() {
@@ -510,6 +613,12 @@ export default function ShopeeSheetPage() {
             Adicionar livro
           </button>
           <button
+            onClick={openExistingPicker}
+            className="px-4 py-2.5 bg-olive-100 text-olive-700 rounded-xl text-sm font-medium hover:bg-olive-200 transition"
+          >
+            {showExistingPicker ? 'Fechar acervo' : 'Adicionar do site'}
+          </button>
+          <button
             onClick={analyzeAll}
             disabled={stats.withImages === 0}
             className="px-4 py-2.5 bg-blue-600 text-white rounded-xl text-sm font-medium hover:bg-blue-700 disabled:bg-warm-200 disabled:text-warm-400 transition"
@@ -533,6 +642,110 @@ export default function ShopeeSheetPage() {
 
         {globalError && (
           <p className="mt-3 text-sm text-red-600 bg-red-50 rounded-xl px-3 py-2">{globalError}</p>
+        )}
+
+        {showExistingPicker && (
+          <div className="mt-4 border-t border-warm-200 pt-4">
+            <div className="flex flex-col sm:flex-row gap-2 sm:items-center justify-between mb-3">
+              <div>
+                <p className="text-sm font-semibold text-warm-900">Livros já cadastrados no site</p>
+                <p className="text-xs text-warm-500">
+                  Selecione um ou mais livros do acervo para virar linhas da planilha.
+                </p>
+              </div>
+              <button
+                onClick={importExistingBooks}
+                disabled={selectedExistingIds.size === 0}
+                className="px-4 py-2 bg-olive-600 text-white rounded-xl text-sm font-medium hover:bg-olive-700 disabled:bg-warm-200 disabled:text-warm-400 transition"
+              >
+                Adicionar selecionados ({selectedExistingIds.size})
+              </button>
+            </div>
+
+            <input
+              value={existingSearch}
+              onChange={(event) => setExistingSearch(event.target.value)}
+              placeholder="Buscar por título, autor, editora ou ISBN..."
+              className="w-full px-4 py-2.5 rounded-xl border border-warm-200 text-sm text-warm-900 outline-none focus:ring-2 focus:ring-navy-200 mb-3"
+            />
+
+            {loadingExistingBooks ? (
+              <div className="py-8 flex justify-center">
+                <div className="w-7 h-7 border-4 border-navy-600 border-t-transparent rounded-full animate-spin" />
+              </div>
+            ) : filteredExistingBooks.length === 0 ? (
+              <div className="py-8 text-center text-sm text-warm-400">
+                {existingSearch ? 'Nenhum livro encontrado para essa busca.' : 'Nenhum livro cadastrado no site.'}
+              </div>
+            ) : (
+              <div className="max-h-80 overflow-y-auto rounded-xl border border-warm-200 divide-y divide-warm-100">
+                {filteredExistingBooks.map((book) => {
+                  const selected = selectedExistingIds.has(book.id);
+                  const alreadyAdded = books.some((draft) => draft.sourceBookId === book.id);
+                  const media = getBookMedia(book);
+
+                  return (
+                    <button
+                      key={book.id}
+                      type="button"
+                      onClick={() => !alreadyAdded && toggleExistingSelection(book.id)}
+                      disabled={alreadyAdded}
+                      className={`w-full p-3 flex items-center gap-3 text-left transition ${
+                        selected
+                          ? 'bg-olive-50'
+                          : alreadyAdded
+                            ? 'bg-warm-50 opacity-60 cursor-not-allowed'
+                            : 'hover:bg-warm-50'
+                      }`}
+                    >
+                      <span className={`w-5 h-5 rounded border-2 flex-shrink-0 flex items-center justify-center ${
+                        selected ? 'bg-olive-600 border-olive-600' : 'border-warm-300'
+                      }`}>
+                        {selected && (
+                          <svg className="w-3 h-3 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
+                          </svg>
+                        )}
+                      </span>
+
+                      <div className="w-12 h-12 rounded-lg bg-warm-100 overflow-hidden relative flex-shrink-0">
+                        {media[0]?.url ? (
+                          <Image src={media[0].url} alt={book.title} fill className="object-cover" sizes="48px" />
+                        ) : (
+                          <div className="w-full h-full flex items-center justify-center text-warm-300">
+                            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
+                            </svg>
+                          </div>
+                        )}
+                      </div>
+
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-center gap-2 min-w-0">
+                          <p className="text-sm font-medium text-warm-900 truncate">{book.title}</p>
+                          {alreadyAdded && (
+                            <span className="text-[10px] px-1.5 py-0.5 rounded bg-warm-200 text-warm-500 flex-shrink-0">
+                              já no lote
+                            </span>
+                          )}
+                        </div>
+                        <p className="text-xs text-warm-500 truncate">
+                          {book.author || 'Autor não informado'} · {book.publisher || 'Editora não informada'}
+                        </p>
+                        <p className="text-[11px] text-warm-400 truncate">
+                          {book.isbn ? `ISBN ${book.isbn}` : 'Sem ISBN'} · {media.length} foto(s) · {book.status}
+                        </p>
+                      </div>
+
+                      <span className="text-sm font-semibold text-warm-800 flex-shrink-0">
+                        R$ {formatPrice(book.price_cents || 0).replace('.', ',')}
+                      </span>
+                    </button>
+                  );
+                })}
+              </div>
+            )}
+          </div>
         )}
       </section>
 

@@ -5,6 +5,7 @@ import type {
   ShopeeExportValidation,
   ShopeeListingDraft,
 } from '@/types/batch';
+import type { Book } from '@/types';
 
 export const BOOK_IMAGE_ROLE_LABELS: Record<BookImageRole, string> = {
   front_cover: 'Capa frontal',
@@ -120,6 +121,13 @@ function buildProductName(analysis: BatchBookAIAnalysis): string {
   return truncate(parts.filter(Boolean).join(' - '), 120);
 }
 
+function buildProductNameFromBook(book: Book): string {
+  if (book.type === 'Apostila') {
+    return truncate(['Apostila', clean(book.course_origin), clean(book.subject), clean(book.title)].filter(Boolean).join(' - '), 120);
+  }
+  return truncate(['Livro', clean(book.title), clean(book.author)].filter(Boolean).join(' - '), 120);
+}
+
 function buildDescription(analysis: BatchBookAIAnalysis): string {
   const lines: string[] = [];
   const title = clean(analysis.title);
@@ -135,6 +143,29 @@ function buildDescription(analysis: BatchBookAIAnalysis): string {
     lines.push(`Defeitos/marcas visiveis: ${analysis.visible_defects.join('; ')}`);
   }
   if (analysis.condition_notes) lines.push(`Observacoes: ${analysis.condition_notes}`);
+
+  lines.push('');
+  lines.push('Livro usado com fotos reais do exemplar. Envio rapido e produto embalado com cuidado.');
+
+  return truncate(lines.join('\n'), 3000);
+}
+
+function buildDescriptionFromBook(book: Book): string {
+  const lines: string[] = [];
+
+  if (book.title) lines.push(`${book.type}: ${book.title}`);
+  if (book.author) lines.push(`Autor: ${book.author}`);
+  if (book.publisher) lines.push(`Editora: ${book.publisher}`);
+  if (book.isbn) lines.push(`ISBN: ${book.isbn}`);
+  if (book.year) lines.push(`Ano: ${book.year}`);
+  if (book.language) lines.push(`Idioma: ${book.language}`);
+  if (book.condition_detail) lines.push(`Estado: ${book.condition_detail}`);
+  if (book.condition_notes) lines.push(`Observacoes: ${book.condition_notes}`);
+
+  if (book.description) {
+    lines.push('');
+    lines.push(book.description);
+  }
 
   lines.push('');
   lines.push('Livro usado com fotos reais do exemplar. Envio rapido e produto embalado com cuidado.');
@@ -199,6 +230,44 @@ export function buildShopeeListingDraft(
     ].filter(Boolean).join('\n'),
     confidence: analysis.confidence || 0,
     warnings: analysis.warnings || [],
+  };
+}
+
+export function buildShopeeListingDraftFromBook(
+  book: Book,
+  images: BatchBookImage[]
+): ShopeeListingDraft {
+  const category = clean(book.category);
+  const imageUrls = sortImagesForShopee(images);
+  const sku = clean(book.sku) || clean(book.isbn) || `LIV-${book.id}`;
+
+  return {
+    localId: `book-${book.id}`,
+    productName: buildProductNameFromBook(book),
+    description: buildDescriptionFromBook(book),
+    category: SHOPEE_CATEGORY_MAP[category] || category || 'Livros e Revistas > Livros > Outros',
+    categoryCode: '',
+    gtin: clean(book.gtin || book.isbn),
+    brand: clean(book.brand || book.publisher) || 'Sem marca',
+    condition: book.condition_detail?.toLowerCase().startsWith('novo') ? 'Novo' : 'Usado',
+    publisher: clean(book.publisher),
+    language: clean(book.language) || 'Português',
+    origin: book.origin === 'Importado' ? 'Importado' : 'Nacional',
+    isbn: clean(book.isbn),
+    editionType: clean(book.edition_type),
+    coverType: clean(book.cover_type),
+    year: clean(book.year),
+    priceCents: book.price_cents || 0,
+    stock: book.stock || 1,
+    sku,
+    weightKg: book.weight_kg || 0.3,
+    widthCm: book.width_cm || 16,
+    lengthCm: book.length_cm || 23,
+    heightCm: book.height_cm || 3,
+    imageUrls,
+    conditionNotes: clean(book.condition_notes),
+    confidence: 1,
+    warnings: ['Importado do acervo do site. Revise categoria e codigo da categoria antes do upload.'],
   };
 }
 
