@@ -12,7 +12,7 @@
     "@google/genai": "^1.46.0",
     "@supabase/supabase-js": "^2.99.3",
     "jose": "^6.2.2",
-    "next": "16.2.1",
+    "next": "16.2.6",
     "react": "19.2.4",
     "react-dom": "19.2.4",
     "uuid": "^13.0.0"
@@ -23,8 +23,11 @@
     "@types/react": "^19",
     "@types/react-dom": "^19",
     "eslint": "^9",
-    "eslint-config-next": "16.2.1",
+    "eslint-config-next": "16.2.6",
     "tailwindcss": "^4",
     "typescript": "^5"
+  },
+  "overrides": {
+    "postcss": "8.5.15"
   }
 }

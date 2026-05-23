@@ -282,7 +282,7 @@ export default function ShopeeSheetPage() {
 
     setLoadingExistingBooks(true);
     try {
-      const res = await fetch('/api/books?status=');
+      const res = await fetch('/api/admin/books?status=');
       if (!res.ok) throw new Error('Erro ao carregar livros do site');
       const data = await res.json();
       setExistingBooks(Array.isArray(data) ? data : []);
@@ -527,7 +527,7 @@ export default function ShopeeSheetPage() {
     );
   }
 
-  async function exportCsv() {
+  async function exportXlsx() {
     setExporting(true);
     setGlobalError('');
 
@@ -543,14 +543,14 @@ export default function ShopeeSheetPage() {
 
       if (!res.ok) {
         const data = await res.json();
-        throw new Error(data.error || 'Erro ao gerar CSV');
+        throw new Error(data.error || 'Erro ao gerar XLSX');
       }
 
       const blob = await res.blob();
       const url = URL.createObjectURL(blob);
       const a = document.createElement('a');
       a.href = url;
-      a.download = `${batchName || 'lote-shopee'}.csv`;
+      a.download = `${batchName || 'lote-shopee'}.xlsx`;
       a.click();
       URL.revokeObjectURL(url);
     } catch (error) {
@@ -566,7 +566,7 @@ export default function ShopeeSheetPage() {
         <div>
           <h1 className="text-xl font-bold text-gray-900">Planilha Shopee por IA</h1>
           <p className="text-sm text-warm-500 mt-1">
-            Crie um lote, analise as fotos dos livros e baixe um CSV para upload em massa.
+            Crie um lote, analise as fotos dos livros e baixe um XLSX para upload em massa.
           </p>
         </div>
         <Link href="/admin" className="px-3 py-1.5 text-sm text-warm-500 hover:text-warm-700 transition">
@@ -626,11 +626,11 @@ export default function ShopeeSheetPage() {
             Analisar todos
           </button>
           <button
-            onClick={exportCsv}
+            onClick={exportXlsx}
             disabled={readyListings.length === 0 || exporting}
             className="px-4 py-2.5 bg-[#EE4D2D] text-white rounded-xl text-sm font-medium hover:bg-[#d4431f] disabled:bg-warm-200 disabled:text-warm-400 transition"
           >
-            {exporting ? 'Gerando...' : `Baixar CSV (${readyListings.length})`}
+            {exporting ? 'Gerando...' : `Baixar XLSX (${readyListings.length})`}
           </button>
           <button
             onClick={clearBatch}

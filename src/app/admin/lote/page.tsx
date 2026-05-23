@@ -262,7 +262,7 @@ export default function LotePage() {
         photo_url: media[0]?.url || '',
       };
 
-      const res = await fetch('/api/books', {
+      const res = await fetch('/api/admin/books', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(bookData),
@@ -294,7 +294,6 @@ export default function LotePage() {
       );
       alert(`Erro ao publicar: ${err instanceof Error ? err.message : 'Erro desconhecido'}`);
     }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [drafts]);
 
   // ---------- Stats ----------

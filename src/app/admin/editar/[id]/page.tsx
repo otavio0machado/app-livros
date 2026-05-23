@@ -14,7 +14,7 @@ export default function EditarLivroPage({ params }: { params: Promise<{ id: stri
   useEffect(() => {
     async function load() {
       try {
-        const res = await fetch(`/api/books/${id}`);
+        const res = await fetch(`/api/admin/books/${id}`);
         if (!res.ok) throw new Error();
         const data = await res.json();
         setBook(data);
@@ -29,7 +29,7 @@ export default function EditarLivroPage({ params }: { params: Promise<{ id: stri
   }, [id, router]);
 
   async function handleSubmit(data: Partial<Book>) {
-    const res = await fetch(`/api/books/${id}`, {
+    const res = await fetch(`/api/admin/books/${id}`, {
       method: 'PUT',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(data),

@@ -25,7 +25,7 @@ export const BOOK_IMAGE_ROLE_HELP: Record<BookImageRole, string> = {
   other: 'Qualquer imagem complementar que ajude na identificacao.',
 };
 
-export const SHOPEE_CSV_HEADERS = [
+export const SHOPEE_EXPORT_HEADERS = [
   'Nome do Produto',
   'Descricao',
   'Categoria',
@@ -297,18 +297,7 @@ export function validateShopeeListing(listing: ShopeeListingDraft): ShopeeExport
   };
 }
 
-function protectCsvCell(value: string): string {
-  const trimmed = value.trimStart();
-  if (/^[=+\-@]/.test(trimmed)) return `'${value}`;
-  return value;
-}
-
-function csvEscape(value: string | number): string {
-  const stringValue = protectCsvCell(String(value ?? ''));
-  return `"${stringValue.replace(/"/g, '""')}"`;
-}
-
-export function listingToShopeeCsvRow(listing: ShopeeListingDraft): string[] {
+export function listingToShopeeExportRow(listing: ShopeeListingDraft): string[] {
   const images = Array.from({ length: 9 }, (_, index) => listing.imageUrls[index] || '');
   return [
     listing.productName,
@@ -334,12 +323,4 @@ export function listingToShopeeCsvRow(listing: ShopeeListingDraft): string[] {
     ...images,
     listing.conditionNotes,
   ].map((value) => String(value ?? ''));
-}
-
-export function buildShopeeCsv(listings: ShopeeListingDraft[]): string {
-  const rows = [
-    SHOPEE_CSV_HEADERS,
-    ...listings.map(listingToShopeeCsvRow),
-  ];
-  return `\uFEFF${rows.map((row) => row.map(csvEscape).join(';')).join('\n')}`;
 }

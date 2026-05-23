@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import { isAuthenticated } from '@/lib/auth';
-import { buildShopeeCsv, validateShopeeListing } from '@/lib/shopee-bulk';
+import { validateShopeeListing } from '@/lib/shopee-bulk';
+import { buildShopeeXlsx } from '@/lib/shopee-xlsx';
 import type { ShopeeListingDraft } from '@/types/batch';
 
 export async function POST(request: Request) {
@@ -33,7 +34,7 @@ export async function POST(request: Request) {
       );
     }
 
-    const csv = buildShopeeCsv(listings as ShopeeListingDraft[]);
+    const xlsx = buildShopeeXlsx(listings as ShopeeListingDraft[]);
     const safeName = String(batchName || 'lote-shopee')
       .normalize('NFD')
       .replace(/[\u0300-\u036f]/g, '')
@@ -41,17 +42,17 @@ export async function POST(request: Request) {
       .replace(/^-|-$/g, '')
       .slice(0, 60) || 'lote-shopee';
 
-    return new NextResponse(csv, {
+    return new NextResponse(Uint8Array.from(xlsx), {
       status: 200,
       headers: {
-        'Content-Type': 'text/csv; charset=utf-8',
-        'Content-Disposition': `attachment; filename="${safeName}.csv"`,
+        'Content-Type': 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+        'Content-Disposition': `attachment; filename="${safeName}.xlsx"`,
       },
     });
   } catch (error) {
     console.error('Erro ao gerar exportação Shopee:', error);
     return NextResponse.json(
-      { error: 'Erro ao gerar planilha' },
+      { error: 'Erro ao gerar XLSX' },
       { status: 500 }
     );
   }

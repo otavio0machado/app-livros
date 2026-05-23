@@ -1,36 +1,49 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# MyShelf
 
-## Getting Started
+Loja/admin em Next.js para cadastrar livros, analisar fotos com IA e gerar lote de produtos para a Shopee.
 
-First, run the development server:
+## Rodando localmente
+
+```bash
+npm install
+cp .env.example .env.local
+npm run dev
+```
+
+Abra [http://localhost:3000](http://localhost:3000).
+
+## Variáveis obrigatórias
+
+Use `.env.example` como base. O admin só entra se `JWT_SECRET`, `ADMIN_EMAIL` e `ADMIN_PASSWORD` estiverem configurados. Sem isso, o login falha fechado.
+
+- `NEXT_PUBLIC_SUPABASE_URL` e `NEXT_PUBLIC_SUPABASE_ANON_KEY`: Supabase público.
+- `SUPABASE_SERVICE_ROLE_KEY`: acesso server-side para CRUD e uploads.
+- `GEMINI_API_KEY`: análise de livros/coleções por IA.
+- `JWT_SECRET`, `ADMIN_EMAIL`, `ADMIN_PASSWORD`: autenticação do painel.
+- `NEXT_PUBLIC_WHATSAPP_NUMBER`: número usado no checkout por WhatsApp.
+
+## Supabase
+
+O schema base está em `supabase/schema.sql`. Ele cria a tabela `books`, índices principais, trigger de `updated_at` e bucket público `book-images`.
+
+## Fluxos principais
+
+- `/loja`: vitrine pública, somente livros disponíveis.
+- `/livro/[id]`: detalhe público do livro disponível.
+- `/carrinho`: checkout por WhatsApp.
+- `/admin`: gestão completa do acervo.
+- `/admin/lote`: cadastro em lote com análise por IA.
+- `/admin/colecao`: montagem de coleção.
+- `/admin/planilha`: criação de lote Shopee e exportação XLSX.
+
+## Shopee
+
+A Shopee aceita arquivo `.xlsx` para upload em massa. A rota `/api/shopee-export` valida os anúncios e retorna uma planilha XLSX pronta para baixar.
+
+## Scripts
 
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+npm run lint
+npm run build
 ```
-
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
-
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
-
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
-
-## Learn More
-
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.

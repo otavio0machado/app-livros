@@ -8,7 +8,7 @@ export default function NovoLivroPage() {
   const router = useRouter();
 
   async function handleSubmit(data: Partial<Book>) {
-    const res = await fetch('/api/books', {
+    const res = await fetch('/api/admin/books', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(data),

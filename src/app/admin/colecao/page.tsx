@@ -64,11 +64,15 @@ export default function ColecaoPage() {
   useEffect(() => {
     async function loadBooks() {
       try {
-        const res = await fetch('/api/books?status=available');
+        const res = await fetch('/api/admin/books?status=available');
+        if (!res.ok) {
+          const errorData = await res.json().catch(() => null);
+          throw new Error(errorData?.error || 'Erro ao carregar livros');
+        }
         const data = await res.json();
         setAllBooks(data);
       } catch (err) {
-        console.error('Erro ao carregar livros:', err);
+        setAnalysisError(err instanceof Error ? err.message : 'Erro ao carregar livros');
       } finally {
         setLoadingBooks(false);
       }
@@ -355,7 +359,7 @@ export default function ColecaoPage() {
     );
 
     try {
-      const res = await fetch('/api/books', {
+      const res = await fetch('/api/admin/books', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(data),
@@ -394,7 +398,7 @@ export default function ColecaoPage() {
       collection_discount_pct: mode !== 'collection-only' ? discountPct : undefined,
     };
 
-    const res = await fetch('/api/books', {
+    const res = await fetch('/api/admin/books', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(bookData),
@@ -418,9 +422,7 @@ export default function ColecaoPage() {
       )
     : allBooks;
 
-  const slotsAnalyzed = bookSlots.filter((s) => s.status === 'analyzed').length;
   const slotsPublished = bookSlots.filter((s) => s.status === 'published').length;
-  const slotsError = bookSlots.filter((s) => s.status === 'error').length;
 
   const helpText = !hasCollImages
     ? 'Adicione a foto da colecao'

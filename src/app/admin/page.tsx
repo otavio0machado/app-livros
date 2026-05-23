@@ -41,6 +41,7 @@ const STATUS_LABELS: Record<string, { label: string; color: string }> = {
 export default function AdminDashboard() {
   const [books, setBooks] = useState<Book[]>([]);
   const [loading, setLoading] = useState(true);
+  const [errorMessage, setErrorMessage] = useState('');
   const [shopeeBookId, setShopeeBookId] = useState<number | null>(null);
   const [shopeeCopied, setShopeeCopied] = useState(false);
 
@@ -50,11 +51,16 @@ export default function AdminDashboard() {
 
   async function fetchBooks() {
     try {
-      const res = await fetch('/api/books?status=');
+      setErrorMessage('');
+      const res = await fetch('/api/admin/books?status=');
+      if (!res.ok) {
+        const data = await res.json().catch(() => null);
+        throw new Error(data?.error || 'Erro ao carregar livros');
+      }
       const data = await res.json();
       setBooks(data);
     } catch (err) {
-      console.error('Erro ao carregar livros:', err);
+      setErrorMessage(err instanceof Error ? err.message : 'Erro ao carregar livros');
     } finally {
       setLoading(false);
     }
@@ -64,26 +70,30 @@ export default function AdminDashboard() {
     if (!confirm('Tem certeza que deseja excluir este livro?')) return;
 
     try {
-      await fetch(`/api/books/${id}`, { method: 'DELETE' });
+      setErrorMessage('');
+      const res = await fetch(`/api/admin/books/${id}`, { method: 'DELETE' });
+      if (!res.ok) throw new Error('Erro ao excluir');
       setBooks((prev) => prev.filter((b) => b.id !== id));
     } catch (err) {
-      console.error('Erro ao excluir:', err);
+      setErrorMessage(err instanceof Error ? err.message : 'Erro ao excluir');
     }
   }
 
   async function toggleStatus(id: number, currentStatus: string) {
     const newStatus = currentStatus === 'available' ? 'sold' : 'available';
     try {
-      await fetch(`/api/books/${id}`, {
+      setErrorMessage('');
+      const res = await fetch(`/api/admin/books/${id}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ status: newStatus }),
       });
+      if (!res.ok) throw new Error('Erro ao atualizar status');
       setBooks((prev) =>
         prev.map((b) => (b.id === id ? { ...b, status: newStatus as Book['status'] } : b))
       );
     } catch (err) {
-      console.error('Erro ao atualizar status:', err);
+      setErrorMessage(err instanceof Error ? err.message : 'Erro ao atualizar status');
     }
   }
 
@@ -115,6 +125,12 @@ export default function AdminDashboard() {
           <p className="text-[10px] sm:text-xs text-gray-500">Vendidos</p>
         </div>
       </div>
+
+      {errorMessage && (
+        <p className="mb-4 text-sm text-red-600 bg-red-50 rounded-xl px-3 py-2">
+          {errorMessage}
+        </p>
+      )}
 
       {/* Add buttons */}
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 mb-4">

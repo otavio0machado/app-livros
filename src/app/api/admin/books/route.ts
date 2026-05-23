@@ -1,28 +1,38 @@
 import { NextResponse } from 'next/server';
-import { getSupabaseAdmin } from '@/lib/supabase';
 import { isAuthenticated } from '@/lib/auth';
+import { getSupabaseAdmin } from '@/lib/supabase';
 import {
   normalizeBookPayload,
+  parseBookStatus,
   parseMedia,
-  sanitizePublicBook,
   sanitizeSearchTerm,
 } from '@/lib/books';
 
 export async function GET(request: Request) {
+  const authenticated = await isAuthenticated();
+  if (!authenticated) {
+    return NextResponse.json({ error: 'Não autorizado' }, { status: 401 });
+  }
+
   try {
     const { searchParams } = new URL(request.url);
     const search = sanitizeSearchTerm(searchParams.get('search') || '');
     const category = searchParams.get('category') || '';
     const type = searchParams.get('type') || '';
     const subject = searchParams.get('subject') || '';
+    const status = parseBookStatus(searchParams.get('status'));
+
+    if (status === null) {
+      return NextResponse.json({ error: 'Status inválido' }, { status: 400 });
+    }
 
     const supabase = getSupabaseAdmin();
     let query = supabase
       .from('books')
       .select('*')
-      .eq('status', 'available')
       .order('created_at', { ascending: false });
 
+    if (status) query = query.eq('status', status);
     if (category) query = query.eq('category', category);
     if (type) query = query.eq('type', type);
     if (subject) query = query.eq('subject', subject);
@@ -38,7 +48,7 @@ export async function GET(request: Request) {
       return NextResponse.json({ error: error.message }, { status: 500 });
     }
 
-    return NextResponse.json((data || []).map((row) => sanitizePublicBook(row)));
+    return NextResponse.json((data || []).map(parseMedia));
   } catch {
     return NextResponse.json({ error: 'Erro ao carregar livros' }, { status: 500 });
   }
@@ -52,7 +62,6 @@ export async function POST(request: Request) {
 
   try {
     const body = await request.json();
-
     const supabase = getSupabaseAdmin();
     const { data, error } = await supabase
       .from('books')

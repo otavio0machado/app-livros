@@ -1,37 +1,36 @@
 import { NextResponse } from 'next/server';
-import { getSupabaseAdmin } from '@/lib/supabase';
 import { isAuthenticated } from '@/lib/auth';
-import { normalizeBookPayload, parseBookId, parseMedia, sanitizePublicBook } from '@/lib/books';
+import { getSupabaseAdmin } from '@/lib/supabase';
+import { normalizeBookPayload, parseBookId, parseMedia } from '@/lib/books';
 
 export async function GET(
   _request: Request,
   { params }: { params: Promise<{ id: string }> }
 ) {
+  const authenticated = await isAuthenticated();
+  if (!authenticated) {
+    return NextResponse.json({ error: 'Não autorizado' }, { status: 401 });
+  }
+
+  const { id } = await params;
+  const bookId = parseBookId(id);
+  if (!bookId) {
+    return NextResponse.json({ error: 'ID inválido' }, { status: 400 });
+  }
+
   try {
-    const { id } = await params;
-    const bookId = parseBookId(id);
-    if (!bookId) {
-      return NextResponse.json({ error: 'ID inválido' }, { status: 400 });
-    }
-
-    const authenticated = await isAuthenticated();
     const supabase = getSupabaseAdmin();
-
-    let query = supabase
+    const { data, error } = await supabase
       .from('books')
       .select('*')
-      .eq('id', bookId);
-
-    if (!authenticated) query = query.eq('status', 'available');
-
-    const { data, error } = await query.single();
+      .eq('id', bookId)
+      .single();
 
     if (error || !data) {
       return NextResponse.json({ error: 'Livro não encontrado' }, { status: 404 });
     }
 
-    const parsed = parseMedia(data);
-    return NextResponse.json(authenticated ? parsed : sanitizePublicBook(parsed));
+    return NextResponse.json(parseMedia(data));
   } catch {
     return NextResponse.json({ error: 'Erro ao carregar livro' }, { status: 500 });
   }
@@ -54,7 +53,6 @@ export async function PUT(
 
   try {
     const body = await request.json();
-
     const supabase = getSupabaseAdmin();
     const { data, error } = await supabase
       .from('books')
@@ -93,21 +91,19 @@ export async function DELETE(
 
     const { data: book } = await supabase
       .from('books')
-      .select('media, photo_url')
+      .select('media')
       .eq('id', bookId)
       .single();
 
-    if (book) {
+    if (book?.media) {
       const paths: string[] = [];
-      if (book.media) {
-        try {
-          const mediaItems = typeof book.media === 'string' ? JSON.parse(book.media) : book.media;
-          for (const item of mediaItems) {
-            if (item.path) paths.push(item.path);
-          }
-        } catch {
-          // Ignore malformed media metadata; deleting the row is still the priority.
+      try {
+        const mediaItems = typeof book.media === 'string' ? JSON.parse(book.media) : book.media;
+        for (const item of mediaItems) {
+          if (item.path) paths.push(item.path);
         }
+      } catch {
+        // Ignore malformed media metadata; deleting the row is still the priority.
       }
       if (paths.length > 0) {
         await supabase.storage.from('book-images').remove(paths);
