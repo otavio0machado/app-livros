@@ -2,19 +2,21 @@ import { NextResponse } from 'next/server';
 import { getSupabaseAdmin } from '@/lib/supabase';
 import { isAuthenticated } from '@/lib/auth';
 import { normalizeBookPayload, parseBookId, parseMedia, sanitizePublicBook } from '@/lib/books';
+import { getListedBookById } from '@/lib/catalog';
 
 export async function GET(
   _request: Request,
   { params }: { params: Promise<{ id: string }> }
 ) {
-  try {
-    const { id } = await params;
-    const bookId = parseBookId(id);
-    if (!bookId) {
-      return NextResponse.json({ error: 'ID inválido' }, { status: 400 });
-    }
+  const { id } = await params;
+  const bookId = parseBookId(id);
+  if (!bookId) {
+    return NextResponse.json({ error: 'ID inválido' }, { status: 400 });
+  }
 
-    const authenticated = await isAuthenticated();
+  const authenticated = await isAuthenticated();
+
+  try {
     const supabase = getSupabaseAdmin();
 
     let query = supabase
@@ -27,13 +29,29 @@ export async function GET(
     const { data, error } = await query.single();
 
     if (error || !data) {
+      const listedBook = getListedBookById(bookId);
+      if (listedBook) {
+        return NextResponse.json(
+          authenticated
+            ? listedBook
+            : sanitizePublicBook(listedBook as unknown as Record<string, unknown>)
+        );
+      }
       return NextResponse.json({ error: 'Livro não encontrado' }, { status: 404 });
     }
 
     const parsed = parseMedia(data);
     return NextResponse.json(authenticated ? parsed : sanitizePublicBook(parsed));
   } catch {
-    return NextResponse.json({ error: 'Erro ao carregar livro' }, { status: 500 });
+    const listedBook = getListedBookById(bookId);
+    if (listedBook) {
+      return NextResponse.json(
+        authenticated
+          ? listedBook
+          : sanitizePublicBook(listedBook as unknown as Record<string, unknown>)
+      );
+    }
+    return NextResponse.json({ error: 'Livro não encontrado' }, { status: 404 });
   }
 }
 

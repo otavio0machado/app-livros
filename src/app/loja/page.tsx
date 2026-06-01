@@ -5,6 +5,7 @@ import SearchBar from '@/components/SearchBar';
 import BookGrid from '@/components/BookGrid';
 import type { Book } from '@/types';
 import { getSupabaseAdmin } from '@/lib/supabase';
+import { mergeWithListedBooks } from '@/lib/catalog';
 
 async function getBooks(searchParams: Record<string, string>): Promise<Book[]> {
   try {
@@ -26,19 +27,20 @@ async function getBooks(searchParams: Record<string, string>): Promise<Book[]> {
     const { data, error } = await query;
     if (error) {
       console.error('Supabase error:', error.message);
-      return [];
+      return mergeWithListedBooks([], searchParams);
     }
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    return (data || []).map((row: any) => {
+    const books = (data || []).map((row: any) => {
       if (row.media && typeof row.media === 'string') {
         try { row.media = JSON.parse(row.media); } catch { row.media = []; }
       }
       if (!row.media) row.media = [];
       return row;
     }) as Book[];
+    return mergeWithListedBooks(books, searchParams);
   } catch (err) {
     console.error('Error fetching books:', err);
-    return [];
+    return mergeWithListedBooks([], searchParams);
   }
 }
 

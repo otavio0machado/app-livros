@@ -1,0 +1,1681 @@
+{
+  "generatedAt": "2026-06-01T20:50:14.658Z",
+  "rule": "salePriceCents = round(amazonPriceCents * 0.70)",
+  "currency": "BRL",
+  "source": "Amazon Brasil search and product result pages",
+  "prices": [
+    {
+      "title": "Pensando o melhor",
+      "query": "\"Pensando Melhor\" livro William Miller",
+      "amazonTitle": "Pensando Melhor...: Como a Ambivalência Molda sua Vida",
+      "amazonPriceCents": 7380,
+      "salePriceCents": 5166,
+      "amazonUrl": "https://www.amazon.com.br/dp/6558821478",
+      "score": 53,
+      "alternatives": [
+        {
+          "title": "Pensando Melhor...: Como a Ambivalência Molda sua Vida",
+          "amazonPriceCents": 7380,
+          "amazonUrl": "https://www.amazon.com.br/dp/6558821478",
+          "score": 53
+        }
+      ]
+    },
+    {
+      "title": "Não se leve tão a sério",
+      "query": "\"Não se leve tão a sério\"  livro",
+      "amazonTitle": "Não se leve tão a sério: Como novos hábitos podem te ajudar a encontrar a alegria no dia a dia",
+      "amazonPriceCents": 4994,
+      "salePriceCents": 3496,
+      "amazonUrl": "https://www.amazon.com.br/dp/854223748X",
+      "score": 143,
+      "alternatives": [
+        {
+          "title": "Não se leve tão a sério: Como novos hábitos podem te ajudar a encontrar a alegria no dia a dia",
+          "amazonPriceCents": 4994,
+          "amazonUrl": "https://www.amazon.com.br/dp/854223748X",
+          "score": 143
+        }
+      ]
+    },
+    {
+      "title": "História do pensamento ocidental",
+      "query": "\"História do pensamento ocidental\" Bertrand Russell livro",
+      "amazonTitle": "História do pensamento ocidental",
+      "amazonPriceCents": 7418,
+      "salePriceCents": 5193,
+      "amazonUrl": "https://www.amazon.com.br/dp/8520947212",
+      "score": 178,
+      "alternatives": [
+        {
+          "title": "História do pensamento ocidental",
+          "amazonPriceCents": 7418,
+          "amazonUrl": "https://www.amazon.com.br/dp/8520947212",
+          "score": 178
+        },
+        {
+          "title": "A conquista da felicidade",
+          "amazonPriceCents": 2983,
+          "amazonUrl": "https://www.amazon.com.br/dp/6556401919",
+          "score": -42
+        },
+        {
+          "title": "Do mil ao milhão: sem cortar o cafezinho – O best-seller de Thiago Nigro, autor de \"O homem que comprou o tempo\"",
+          "amazonPriceCents": 2408,
+          "amazonUrl": "https://www.amazon.com.br/dp/8595083274",
+          "score": -72
+        }
+      ]
+    },
+    {
+      "title": "Memória",
+      "query": "\"Memória\" Ivan Izquierdo livro",
+      "amazonTitle": "Memória",
+      "amazonPriceCents": 7648,
+      "salePriceCents": 5354,
+      "amazonUrl": "https://www.amazon.com.br/dp/8582714912",
+      "score": 193,
+      "alternatives": [
+        {
+          "title": "Memória",
+          "amazonPriceCents": 7648,
+          "amazonUrl": "https://www.amazon.com.br/dp/8582714912",
+          "score": 193
+        }
+      ]
+    },
+    {
+      "title": "Vida à deriva — box (Partes 1 e 2)",
+      "query": "manual Amazon reference",
+      "amazonTitle": "Vida à Deriva – partes 1 e 2",
+      "amazonPriceCents": 19112,
+      "amazonUrl": "https://www.amazon.com.br/s?k=%22Vida+%C3%A0+Deriva%22+Yoshihiro+Tatsumi",
+      "score": 999,
+      "note": "Amazon Brasil não mostrou preço para o box; referência calculada pela soma das partes 1 e 2 encontradas na Amazon.",
+      "salePriceCents": 13378,
+      "alternatives": []
+    },
+    {
+      "title": "Psicofármacos",
+      "query": "\"Psicofármacos\"  livro",
+      "amazonTitle": "Psicofármacos: Um Guia Prático e Essencial para o Farmacêutico",
+      "amazonPriceCents": 10790,
+      "salePriceCents": 7553,
+      "amazonUrl": "https://www.amazon.com.br/dp/6527072376",
+      "score": 143,
+      "alternatives": [
+        {
+          "title": "Psicofármacos: Um Guia Prático e Essencial para o Farmacêutico",
+          "amazonPriceCents": 10790,
+          "amazonUrl": "https://www.amazon.com.br/dp/6527072376",
+          "score": 143
+        },
+        {
+          "title": "Psicofármacos Para Ser: A Nova Psiquiatria Centrada na Transformação Pessoal: Como os medicamentos podem ajudar seus pacientes a serem mais funcionais e livres - com estratégia, ética e liberdade",
+          "amazonPriceCents": 3990,
+          "amazonUrl": "https://www.amazon.com.br/dp/B0DVMQCM7L",
+          "score": 135
+        },
+        {
+          "title": "Psicofármacos: Consulta rápida",
+          "amazonPriceCents": 27093,
+          "amazonUrl": "https://www.amazon.com.br/dp/6558821362",
+          "score": 88
+        }
+      ]
+    },
+    {
+      "title": "Dom Quixote — box (Volumes 1 e 2)",
+      "query": "\"Dom Quixote\" box volumes 1 2",
+      "amazonTitle": "Box - Dom Quixote",
+      "amazonPriceCents": 21726,
+      "salePriceCents": 15208,
+      "amazonUrl": "https://www.amazon.com.br/dp/8520923097",
+      "score": 198,
+      "alternatives": [
+        {
+          "title": "Box - Dom Quixote",
+          "amazonPriceCents": 21726,
+          "amazonUrl": "https://www.amazon.com.br/dp/8520923097",
+          "score": 198
+        },
+        {
+          "title": "Dom Quixote de La Mancha - Vol. I",
+          "amazonPriceCents": 4658,
+          "amazonUrl": "https://www.amazon.com.br/dp/8572327266",
+          "score": 138
+        },
+        {
+          "title": "Dom Quixote de la Mancha – Edição de Luxo Almofadada | Versão Integral em Capa Dura",
+          "amazonPriceCents": 7310,
+          "amazonUrl": "https://www.amazon.com.br/dp/6584956261",
+          "score": 89
+        }
+      ]
+    },
+    {
+      "title": "Laurentino Gomes",
+      "query": "Kit Escravidão Laurentino Gomes coleção completa",
+      "amazonTitle": "Kit Escravidão - Laurentino Gomes (Coleção Completa)",
+      "amazonPriceCents": 19538,
+      "salePriceCents": 13677,
+      "amazonUrl": "https://www.amazon.com.br/dp/8900004530",
+      "score": 173,
+      "alternatives": [
+        {
+          "title": "Kit Escravidão - Laurentino Gomes (Coleção Completa)",
+          "amazonPriceCents": 19538,
+          "amazonUrl": "https://www.amazon.com.br/dp/8900004530",
+          "score": 173
+        },
+        {
+          "title": "Livros Escravidão Volumes 1, 2 e 3 Laurentino Gomes",
+          "amazonPriceCents": 22923,
+          "amazonUrl": "https://www.amazon.com.br/dp/B0BNLSHJ18",
+          "score": 173
+        },
+        {
+          "title": "Kit Escravidão - Volumes 1 E 2",
+          "amazonPriceCents": 15732,
+          "amazonUrl": "https://www.amazon.com.br/dp/B09BZQTYG2",
+          "score": 73
+        }
+      ]
+    },
+    {
+      "title": "1822",
+      "query": "\"1822\" Laurentino Gomes livro",
+      "amazonTitle": "1822 - Edição Comemorativa Ilustrada",
+      "amazonPriceCents": 7800,
+      "salePriceCents": 5460,
+      "amazonUrl": "https://www.amazon.com.br/dp/852092817X",
+      "score": 218,
+      "alternatives": [
+        {
+          "title": "1822 - Edição Comemorativa Ilustrada",
+          "amazonPriceCents": 7800,
+          "amazonUrl": "https://www.amazon.com.br/dp/852092817X",
+          "score": 218
+        },
+        {
+          "title": "1822: Como um homem sábio, uma princesa triste e um escocês louco por dinheiro ajudaram dom Pedro a criar o Brasil - um país que tinha tudo para dar errado",
+          "amazonPriceCents": 6300,
+          "amazonUrl": "https://www.amazon.com.br/dp/852506064X",
+          "score": 173
+        },
+        {
+          "title": "1822 - Edição comemorativa",
+          "amazonPriceCents": 7285,
+          "amazonUrl": "https://www.amazon.com.br/dp/6559870510",
+          "score": 173
+        }
+      ]
+    },
+    {
+      "title": "O conto da aia",
+      "query": "\"O conto da aia\" Margaret Atwood livro",
+      "amazonTitle": "O conto da aia",
+      "amazonPriceCents": 4720,
+      "salePriceCents": 3304,
+      "amazonUrl": "https://www.amazon.com.br/dp/8532520669",
+      "score": 193,
+      "alternatives": [
+        {
+          "title": "O conto da aia",
+          "amazonPriceCents": 4720,
+          "amazonUrl": "https://www.amazon.com.br/dp/8532520669",
+          "score": 193
+        },
+        {
+          "title": "O conto da aia: graphic novel",
+          "amazonPriceCents": 4376,
+          "amazonUrl": "https://www.amazon.com.br/dp/8532531520",
+          "score": 124
+        },
+        {
+          "title": "Box O conto da aia",
+          "amazonPriceCents": 4740,
+          "amazonUrl": "https://www.amazon.com.br/dp/853253113X",
+          "score": 73
+        }
+      ]
+    },
+    {
+      "title": "A falência",
+      "query": "\"A falência\" Júlia Lopes de Almeida livro",
+      "amazonTitle": "A falência",
+      "amazonPriceCents": 1900,
+      "salePriceCents": 1330,
+      "amazonUrl": "https://www.amazon.com.br/dp/6550970423",
+      "score": 193,
+      "alternatives": [
+        {
+          "title": "A falência",
+          "amazonPriceCents": 1900,
+          "amazonUrl": "https://www.amazon.com.br/dp/6550970423",
+          "score": 193
+        },
+        {
+          "title": "A falência",
+          "amazonPriceCents": 3700,
+          "amazonUrl": "https://www.amazon.com.br/dp/852681477X",
+          "score": 193
+        },
+        {
+          "title": "A falência",
+          "amazonPriceCents": 8396,
+          "amazonUrl": "https://www.amazon.com.br/dp/6551380026",
+          "score": 193
+        }
+      ]
+    },
+    {
+      "title": "A terra dos mil povos",
+      "query": "\"A terra dos mil povos\" Kaká Werá Jecupé livro",
+      "amazonTitle": "A terra dos mil povos: História Indígena do Brasil Contada por um índio",
+      "amazonPriceCents": 5462,
+      "salePriceCents": 3823,
+      "amazonUrl": "https://www.amazon.com.br/dp/6586028043",
+      "score": 173,
+      "alternatives": [
+        {
+          "title": "A terra dos mil povos: História Indígena do Brasil Contada por um índio",
+          "amazonPriceCents": 5462,
+          "amazonUrl": "https://www.amazon.com.br/dp/6586028043",
+          "score": 173
+        }
+      ]
+    },
+    {
+      "title": "Guerra e paz — box (Volumes 1 e 2)",
+      "query": "manual Amazon reference",
+      "amazonTitle": "Guerra e paz",
+      "amazonPriceCents": 23619,
+      "amazonUrl": "https://www.amazon.com.br/dp/8535930043",
+      "score": 999,
+      "note": "Amazon Brasil não mostrou preço confiável para o box específico; referência usada a partir da edição disponível de Guerra e paz.",
+      "salePriceCents": 16533,
+      "alternatives": []
+    },
+    {
+      "title": "Palestina",
+      "query": "\"Palestina\" Joe Sacco livro",
+      "amazonTitle": "Palestina",
+      "amazonPriceCents": 10678,
+      "salePriceCents": 7475,
+      "amazonUrl": "https://www.amazon.com.br/dp/6586691400",
+      "score": 193,
+      "alternatives": [
+        {
+          "title": "Palestina",
+          "amazonPriceCents": 10678,
+          "amazonUrl": "https://www.amazon.com.br/dp/6586691400",
+          "score": 193
+        },
+        {
+          "title": "Coleção Palestina por Sacco, Joe [Fantagraphics Books, 2001] (Papelão)",
+          "amazonPriceCents": 111100,
+          "amazonUrl": "https://www.amazon.com.br/dp/B00DWWF9Z4",
+          "score": 48
+        },
+        {
+          "title": "Reportagens",
+          "amazonPriceCents": 7492,
+          "amazonUrl": "https://www.amazon.com.br/dp/853592731X",
+          "score": 3
+        }
+      ]
+    },
+    {
+      "title": "Breve história de quase tudo",
+      "query": "\"Breve história de quase tudo\" Bill Bryson livro",
+      "amazonTitle": "Breve história de quase tudo",
+      "amazonPriceCents": 3990,
+      "salePriceCents": 2793,
+      "amazonUrl": "https://www.amazon.com.br/dp/096573840X",
+      "score": 193,
+      "alternatives": [
+        {
+          "title": "Breve história de quase tudo",
+          "amazonPriceCents": 3990,
+          "amazonUrl": "https://www.amazon.com.br/dp/096573840X",
+          "score": 193
+        }
+      ]
+    },
+    {
+      "title": "1984",
+      "query": "\"1984\" George Orwell livro",
+      "amazonTitle": "1984",
+      "amazonPriceCents": 1900,
+      "salePriceCents": 1330,
+      "amazonUrl": "https://www.amazon.com.br/dp/6585765389",
+      "score": 238,
+      "alternatives": [
+        {
+          "title": "1984",
+          "amazonPriceCents": 1900,
+          "amazonUrl": "https://www.amazon.com.br/dp/6585765389",
+          "score": 238
+        },
+        {
+          "title": "1984",
+          "amazonPriceCents": 2490,
+          "amazonUrl": "https://www.amazon.com.br/dp/6556430307",
+          "score": 238
+        },
+        {
+          "title": "1984",
+          "amazonPriceCents": 5434,
+          "amazonUrl": "https://www.amazon.com.br/dp/6588732023",
+          "score": 238
+        }
+      ]
+    },
+    {
+      "title": "Sapiens",
+      "query": "manual Amazon reference",
+      "amazonTitle": "Sapiens (Nova edição): Uma breve história da humanidade",
+      "amazonPriceCents": 7162,
+      "amazonUrl": "https://www.amazon.com.br/dp/8535933921",
+      "score": 999,
+      "salePriceCents": 5013,
+      "alternatives": []
+    },
+    {
+      "title": "Precisamos falar sobre Kevin",
+      "query": "manual Amazon reference",
+      "amazonTitle": "Precisamos falar sobre o Kevin",
+      "amazonPriceCents": 4622,
+      "amazonUrl": "https://www.amazon.com.br/s?k=Precisamos+falar+sobre+Kevin+Lionel+Shriver+livro",
+      "score": 999,
+      "salePriceCents": 3235,
+      "alternatives": []
+    },
+    {
+      "title": "Infâncias roubadas",
+      "query": "\"Infâncias roubadas\" Angela Marsons livro",
+      "amazonTitle": "Infâncias roubadas",
+      "amazonPriceCents": 5235,
+      "salePriceCents": 3664,
+      "amazonUrl": "https://www.amazon.com.br/dp/6586553601",
+      "score": 193,
+      "alternatives": [
+        {
+          "title": "Infâncias roubadas",
+          "amazonPriceCents": 5235,
+          "amazonUrl": "https://www.amazon.com.br/dp/6586553601",
+          "score": 193
+        }
+      ]
+    },
+    {
+      "title": "A última festa",
+      "query": "\"A última festa\" Lucy Foley livro",
+      "amazonTitle": "A Última Festa",
+      "amazonPriceCents": 45600,
+      "salePriceCents": 31920,
+      "amazonUrl": "https://www.amazon.com.br/dp/9897775110",
+      "score": 138,
+      "alternatives": [
+        {
+          "title": "A Última Festa",
+          "amazonPriceCents": 45600,
+          "amazonUrl": "https://www.amazon.com.br/dp/9897775110",
+          "score": 138
+        }
+      ]
+    },
+    {
+      "title": "Jogos malignos",
+      "query": "\"Jogos malignos\" Angela Marsons livro",
+      "amazonTitle": "Jogos Malignos",
+      "amazonPriceCents": 5235,
+      "salePriceCents": 3664,
+      "amazonUrl": "https://www.amazon.com.br/dp/8582355777",
+      "score": 193,
+      "alternatives": [
+        {
+          "title": "Jogos Malignos",
+          "amazonPriceCents": 5235,
+          "amazonUrl": "https://www.amazon.com.br/dp/8582355777",
+          "score": 193
+        }
+      ]
+    },
+    {
+      "title": "Drácula",
+      "query": "\"Drácula\" Bram Stoker livro",
+      "amazonTitle": "Dracula",
+      "amazonPriceCents": 1194,
+      "salePriceCents": 836,
+      "amazonUrl": "https://www.amazon.com.br/dp/6552941889",
+      "score": 238,
+      "alternatives": [
+        {
+          "title": "Dracula",
+          "amazonPriceCents": 1194,
+          "amazonUrl": "https://www.amazon.com.br/dp/6552941889",
+          "score": 238
+        },
+        {
+          "title": "Drácula",
+          "amazonPriceCents": 1252,
+          "amazonUrl": "https://www.amazon.com.br/dp/8504016145",
+          "score": 238
+        },
+        {
+          "title": "Dracula",
+          "amazonPriceCents": 1999,
+          "amazonUrl": "https://www.amazon.com.br/dp/8572325700",
+          "score": 238
+        }
+      ]
+    },
+    {
+      "title": "A lista de convidados",
+      "query": "\"A lista de convidados\" Lucy Foley livro",
+      "amazonTitle": "A lista de convidados",
+      "amazonPriceCents": 4162,
+      "salePriceCents": 2913,
+      "amazonUrl": "https://www.amazon.com.br/dp/6555601507",
+      "score": 193,
+      "alternatives": [
+        {
+          "title": "A lista de convidados",
+          "amazonPriceCents": 4162,
+          "amazonUrl": "https://www.amazon.com.br/dp/6555601507",
+          "score": 193
+        }
+      ]
+    },
+    {
+      "title": "Novembro de 63",
+      "query": "manual Amazon reference",
+      "amazonTitle": "Novembro de 63",
+      "amazonPriceCents": 9210,
+      "amazonUrl": "https://www.amazon.com.br/s?k=%22Novembro+de+63%22+Stephen+King+livro",
+      "score": 999,
+      "salePriceCents": 6447,
+      "alternatives": []
+    },
+    {
+      "title": "Salem",
+      "query": "\"Salem\" Stephen King livro português",
+      "amazonTitle": "Salem",
+      "amazonPriceCents": 6780,
+      "salePriceCents": 4746,
+      "amazonUrl": "https://www.amazon.com.br/dp/858105045X",
+      "score": 193,
+      "alternatives": [
+        {
+          "title": "Salem",
+          "amazonPriceCents": 6780,
+          "amazonUrl": "https://www.amazon.com.br/dp/858105045X",
+          "score": 193
+        },
+        {
+          "title": "Salem&#x27;s Lot (1979) (BD) [Blu-ray]",
+          "amazonPriceCents": 7566,
+          "amazonUrl": "https://www.amazon.com.br/dp/B01L3TCBLW",
+          "score": 173
+        },
+        {
+          "title": "Sombras da noite",
+          "amazonPriceCents": 6169,
+          "amazonUrl": "https://www.amazon.com.br/dp/8581050417",
+          "score": -42
+        }
+      ]
+    },
+    {
+      "title": "Sobre a escrita",
+      "query": "manual Amazon reference",
+      "amazonTitle": "Sobre a escrita: A arte em memórias",
+      "amazonPriceCents": 4743,
+      "amazonUrl": "https://www.amazon.com.br/s?k=%22Sobre+a+escrita%22+Stephen+King+livro",
+      "score": 999,
+      "salePriceCents": 3320,
+      "alternatives": []
+    },
+    {
+      "title": "Me chame pelo seu nome",
+      "query": "manual Amazon reference",
+      "amazonTitle": "Me chame pelo seu nome",
+      "amazonPriceCents": 3999,
+      "amazonUrl": "https://www.amazon.com.br/s?k=%22Me+chame+pelo+seu+nome%22+Andr%C3%A9+Aciman+livro",
+      "score": 999,
+      "salePriceCents": 2799,
+      "alternatives": []
+    },
+    {
+      "title": "Água funda",
+      "query": "manual Amazon reference",
+      "amazonTitle": "Água funda",
+      "amazonPriceCents": 4622,
+      "amazonUrl": "https://www.amazon.com.br/s?k=%22%C3%81gua+funda%22+Ruth+Guimar%C3%A3es+livro",
+      "score": 999,
+      "salePriceCents": 3235,
+      "alternatives": []
+    },
+    {
+      "title": "As intermitências da morte",
+      "query": "\"As intermitências da morte\" José Saramago livro",
+      "amazonTitle": "As intermitências da Morte (Nova edição)",
+      "amazonPriceCents": 5360,
+      "salePriceCents": 3752,
+      "amazonUrl": "https://www.amazon.com.br/dp/8535930345",
+      "score": 218,
+      "alternatives": [
+        {
+          "title": "As intermitências da Morte (Nova edição)",
+          "amazonPriceCents": 5360,
+          "amazonUrl": "https://www.amazon.com.br/dp/8535930345",
+          "score": 218
+        },
+        {
+          "title": "As intermitências da morte (Nova edição)",
+          "amazonPriceCents": 3990,
+          "amazonUrl": "https://www.amazon.com.br/dp/8581488684",
+          "score": 173
+        },
+        {
+          "title": "O Jogo do Simbólico e Imaginário da Morte e Seus Significados em As Intermitências da Morte, de José Saramago",
+          "amazonPriceCents": 3228,
+          "amazonUrl": "https://www.amazon.com.br/dp/8581488684",
+          "score": 103
+        }
+      ]
+    },
+    {
+      "title": "Ensaio sobre a cegueira",
+      "query": "\"Ensaio sobre a cegueira\" José Saramago livro",
+      "amazonTitle": "Ensaio sobre a cegueira (Nova edição)",
+      "amazonPriceCents": 4874,
+      "salePriceCents": 3412,
+      "amazonUrl": "https://www.amazon.com.br/dp/8535930310",
+      "score": 173,
+      "alternatives": [
+        {
+          "title": "Ensaio sobre a cegueira (Nova edição)",
+          "amazonPriceCents": 4874,
+          "amazonUrl": "https://www.amazon.com.br/dp/8535930310",
+          "score": 173
+        },
+        {
+          "title": "Ensaio sobre a cegueira (Edição de 30 anos)",
+          "amazonPriceCents": 8540,
+          "amazonUrl": "https://www.amazon.com.br/dp/8535946047",
+          "score": 173
+        },
+        {
+          "title": "Ensaio sobre a cegueira (Edição especial)",
+          "amazonPriceCents": 3990,
+          "amazonUrl": "https://www.amazon.com.br/dp/8535930361",
+          "score": 165
+        }
+      ]
+    },
+    {
+      "title": "A montanha é você",
+      "query": "\"A montanha é você\" Brianna Wiest livro",
+      "amazonTitle": "A montanha é você: Como transformar a autossabotagem em autocontrole",
+      "amazonPriceCents": 3980,
+      "salePriceCents": 2786,
+      "amazonUrl": "https://www.amazon.com.br/dp/8551010123",
+      "score": 173,
+      "alternatives": [
+        {
+          "title": "A montanha é você: Como transformar a autossabotagem em autocontrole",
+          "amazonPriceCents": 3980,
+          "amazonUrl": "https://www.amazon.com.br/dp/8551010123",
+          "score": 173
+        },
+        {
+          "title": "The Mountain Is You: Transforming Self-Sabotage Into Self-Mastery (English Edition)",
+          "amazonPriceCents": 5490,
+          "amazonUrl": "https://www.amazon.com.br/dp/B0CFTC8PBT",
+          "score": -42
+        }
+      ]
+    },
+    {
+      "title": "Este livro é gay",
+      "query": "manual Amazon reference",
+      "amazonTitle": "Este livro é gay: E hétero, e bi, e trans...",
+      "amazonPriceCents": 3485,
+      "amazonUrl": "https://www.amazon.com.br/s?k=%22Este+livro+%C3%A9+gay%22+Juno+Dawson+livro",
+      "score": 999,
+      "salePriceCents": 2440,
+      "alternatives": []
+    },
+    {
+      "title": "Savanna Game",
+      "query": "\"Savanna Game\" Vol. 1 Ransuke Kuroi",
+      "amazonTitle": "Savanna Game - Vol. 1",
+      "amazonPriceCents": 1911,
+      "salePriceCents": 1338,
+      "amazonUrl": "https://www.amazon.com.br/dp/8569212046",
+      "score": 218,
+      "alternatives": [
+        {
+          "title": "Savanna Game - Vol. 1",
+          "amazonPriceCents": 1911,
+          "amazonUrl": "https://www.amazon.com.br/dp/8569212046",
+          "score": 218
+        },
+        {
+          "title": "Savanna Game - 2º temporada - Vol. 1",
+          "amazonPriceCents": 1250,
+          "amazonUrl": "https://www.amazon.com.br/dp/8569212119",
+          "score": 173
+        }
+      ]
+    },
+    {
+      "title": "Papéis avulsos",
+      "query": "manual Amazon reference",
+      "amazonTitle": "Papéis avulsos",
+      "amazonPriceCents": 3809,
+      "amazonUrl": "https://www.amazon.com.br/dp/856356014X",
+      "score": 999,
+      "salePriceCents": 2666,
+      "alternatives": []
+    },
+    {
+      "title": "Edgar Allan Poe",
+      "query": "\"Edgar Allan Poe\" Edgar Allan Poe livro",
+      "amazonTitle": "Edgar Allan poe - o Gato Preto e Outros Contos",
+      "amazonPriceCents": 1238,
+      "salePriceCents": 867,
+      "amazonUrl": "https://www.amazon.com.br/dp/6586181127",
+      "score": 218,
+      "alternatives": [
+        {
+          "title": "Edgar Allan poe - o Gato Preto e Outros Contos",
+          "amazonPriceCents": 1238,
+          "amazonUrl": "https://www.amazon.com.br/dp/6586181127",
+          "score": 218
+        },
+        {
+          "title": "Edgar Allan Poe: Histórias Extraordinárias",
+          "amazonPriceCents": 3945,
+          "amazonUrl": "https://www.amazon.com.br/dp/8506058287",
+          "score": 218
+        },
+        {
+          "title": "Edgar Allan Poe - Vol. 1",
+          "amazonPriceCents": 6552,
+          "amazonUrl": "https://www.amazon.com.br/dp/8594540248",
+          "score": 218
+        }
+      ]
+    },
+    {
+      "title": "Dom Quixote — versão para criança",
+      "query": "\"Dom Quixote\" Miguel de Cervantes livro",
+      "amazonTitle": "Dom Quixote",
+      "amazonPriceCents": 1990,
+      "salePriceCents": 1393,
+      "amazonUrl": "https://www.amazon.com.br/dp/8532249922",
+      "score": 238,
+      "alternatives": [
+        {
+          "title": "Dom Quixote",
+          "amazonPriceCents": 1990,
+          "amazonUrl": "https://www.amazon.com.br/dp/8532249922",
+          "score": 238
+        },
+        {
+          "title": "Dom Quixote",
+          "amazonPriceCents": 2529,
+          "amazonUrl": "https://www.amazon.com.br/dp/6585765338",
+          "score": 238
+        },
+        {
+          "title": "Dom Quixote",
+          "amazonPriceCents": 4265,
+          "amazonUrl": "https://www.amazon.com.br/dp/8525433632",
+          "score": 238
+        }
+      ]
+    },
+    {
+      "title": "Antes que o café esfrie",
+      "query": "\"Antes que o café esfrie\" Toshikazu Kawaguchi livro",
+      "amazonTitle": "Antes que o café esfrie: 1",
+      "amazonPriceCents": 3175,
+      "salePriceCents": 2223,
+      "amazonUrl": "https://www.amazon.com.br/dp/6588490364",
+      "score": 173,
+      "alternatives": [
+        {
+          "title": "Antes que o café esfrie: 1",
+          "amazonPriceCents": 3175,
+          "amazonUrl": "https://www.amazon.com.br/dp/6588490364",
+          "score": 173
+        },
+        {
+          "title": "Antes que o Café esfrie 4: Quando chega a hora de dizer Adeus",
+          "amazonPriceCents": 3324,
+          "amazonUrl": "https://www.amazon.com.br/dp/6588490879",
+          "score": 173
+        },
+        {
+          "title": "Antes que o Café esfrie 3: A MORTE NÃO PRECISA SER O FIM DA VIDA",
+          "amazonPriceCents": 3648,
+          "amazonUrl": "https://www.amazon.com.br/dp/6588490704",
+          "score": 173
+        }
+      ]
+    },
+    {
+      "title": "Por que escrevo",
+      "query": "\"Por que escrevo\" George Orwell livro",
+      "amazonTitle": "Por que escrevo",
+      "amazonPriceCents": 3979,
+      "salePriceCents": 2785,
+      "amazonUrl": "https://www.amazon.com.br/dp/8582851294",
+      "score": 193,
+      "alternatives": [
+        {
+          "title": "Por que escrevo",
+          "amazonPriceCents": 3979,
+          "amazonUrl": "https://www.amazon.com.br/dp/8582851294",
+          "score": 193
+        },
+        {
+          "title": "Por que escrevo: e outros ensaios sobre literatura",
+          "amazonPriceCents": 2648,
+          "amazonUrl": "https://www.amazon.com.br/dp/6588732341",
+          "score": 173
+        },
+        {
+          "title": "Coisas que não quero saber (Trilogia Autobiografia Viva, vol. 1): Uma resposta ao ensaio \"Por que escrevo\", de George Orwell",
+          "amazonPriceCents": 4349,
+          "amazonUrl": "https://www.amazon.com.br/dp/8582178646",
+          "score": 58
+        }
+      ]
+    },
+    {
+      "title": "Vidas secas",
+      "query": "\"Vidas secas\" Graciliano Ramos livro",
+      "amazonTitle": "Vidas Secas",
+      "amazonPriceCents": 3790,
+      "salePriceCents": 2653,
+      "amazonUrl": "https://www.amazon.com.br/dp/6584962121",
+      "score": 238,
+      "alternatives": [
+        {
+          "title": "Vidas Secas",
+          "amazonPriceCents": 3790,
+          "amazonUrl": "https://www.amazon.com.br/dp/6584962121",
+          "score": 238
+        },
+        {
+          "title": "Vidas secas",
+          "amazonPriceCents": 4142,
+          "amazonUrl": "https://www.amazon.com.br/dp/8510096686",
+          "score": 238
+        },
+        {
+          "title": "Vidas Secas: Texto integral",
+          "amazonPriceCents": 2186,
+          "amazonUrl": "https://www.amazon.com.br/dp/8594484828",
+          "score": 218
+        }
+      ]
+    },
+    {
+      "title": "O diabo no corpo",
+      "query": "\"O diabo no corpo\" Raymond Radiguet livro",
+      "amazonTitle": "O Diabo no Corpo",
+      "amazonPriceCents": 1489,
+      "salePriceCents": 1042,
+      "amazonUrl": "https://www.amazon.com.br/dp/B0B5HPP5Y6",
+      "score": 185,
+      "alternatives": [
+        {
+          "title": "O Diabo no Corpo",
+          "amazonPriceCents": 1489,
+          "amazonUrl": "https://www.amazon.com.br/dp/B0B5HPP5Y6",
+          "score": 185
+        },
+        {
+          "title": "O diabo no corpo (Grandes Amores)",
+          "amazonPriceCents": 1290,
+          "amazonUrl": "https://www.amazon.com.br/dp/B0DWHK84QT",
+          "score": 173
+        },
+        {
+          "title": "Com o Diabo no Corpo",
+          "amazonPriceCents": 3254,
+          "amazonUrl": "https://www.amazon.com.br/dp/8585910011",
+          "score": 173
+        }
+      ]
+    },
+    {
+      "title": "Édipo Rei",
+      "query": "\"Édipo Rei\" Sófocles livro",
+      "amazonTitle": "Édipo Rei",
+      "amazonPriceCents": 7968,
+      "salePriceCents": 5578,
+      "amazonUrl": "https://www.amazon.com.br/dp/6555800860",
+      "score": 238,
+      "alternatives": [
+        {
+          "title": "Édipo Rei",
+          "amazonPriceCents": 7968,
+          "amazonUrl": "https://www.amazon.com.br/dp/6555800860",
+          "score": 238
+        },
+        {
+          "title": "Édipo Rei Antígona - Col. A Obra Prima de Cada Autor",
+          "amazonPriceCents": 2200,
+          "amazonUrl": "https://www.amazon.com.br/dp/8572324887",
+          "score": 218
+        },
+        {
+          "title": "Édipo Rei - Sófocles: Clássicos da Grécia Antiga",
+          "amazonPriceCents": 2688,
+          "amazonUrl": "https://www.amazon.com.br/dp/855210038X",
+          "score": 218
+        }
+      ]
+    },
+    {
+      "title": "Antígona",
+      "query": "manual Amazon reference",
+      "amazonTitle": "Antígona",
+      "amazonPriceCents": 1868,
+      "amazonUrl": "https://www.amazon.com.br/s?k=%22Ant%C3%ADgona%22+S%C3%B3focles+livro",
+      "score": 999,
+      "salePriceCents": 1308,
+      "alternatives": []
+    },
+    {
+      "title": "Várias histórias",
+      "query": "\"Várias histórias\" Machado de Assis livro",
+      "amazonTitle": "Várias Histórias: Machado de Assis",
+      "amazonPriceCents": 2489,
+      "salePriceCents": 1742,
+      "amazonUrl": "https://www.amazon.com.br/dp/6587034330",
+      "score": 218,
+      "alternatives": [
+        {
+          "title": "Várias Histórias: Machado de Assis",
+          "amazonPriceCents": 2489,
+          "amazonUrl": "https://www.amazon.com.br/dp/6587034330",
+          "score": 218
+        },
+        {
+          "title": "Várias Histórias: Edição Anotada, com Biografia do Autor e Panorama da Vida Cotidiana da época",
+          "amazonPriceCents": 2583,
+          "amazonUrl": "https://www.amazon.com.br/dp/6556664685",
+          "score": 218
+        },
+        {
+          "title": "Várias Histórias",
+          "amazonPriceCents": 4550,
+          "amazonUrl": "https://www.amazon.com.br/dp/6555800941",
+          "score": 193
+        }
+      ]
+    },
+    {
+      "title": "10 lições sobre Marx",
+      "query": "\"10 lições sobre Marx\" Fernando Magalhães livro",
+      "amazonTitle": "10 lições sobre Marx",
+      "amazonPriceCents": 2089,
+      "salePriceCents": 1462,
+      "amazonUrl": "https://www.amazon.com.br/dp/8532638988",
+      "score": 193,
+      "alternatives": [
+        {
+          "title": "10 lições sobre Marx",
+          "amazonPriceCents": 2089,
+          "amazonUrl": "https://www.amazon.com.br/dp/8532638988",
+          "score": 193
+        },
+        {
+          "title": "10 lições sobre Hobbes",
+          "amazonPriceCents": 2129,
+          "amazonUrl": "https://www.amazon.com.br/dp/8532648258",
+          "score": 56
+        }
+      ]
+    },
+    {
+      "title": "O mundo assombrado pelos demônios",
+      "query": "\"O mundo assombrado pelos demônios\" Carl Sagan livro",
+      "amazonTitle": "O mundo assombrado pelos demônios: A ciência vista como uma vela no escuro",
+      "amazonPriceCents": 2790,
+      "salePriceCents": 1953,
+      "amazonUrl": "https://www.amazon.com.br/dp/6077473987",
+      "score": 173,
+      "alternatives": [
+        {
+          "title": "O mundo assombrado pelos demônios: A ciência vista como uma vela no escuro",
+          "amazonPriceCents": 2790,
+          "amazonUrl": "https://www.amazon.com.br/dp/6077473987",
+          "score": 173
+        },
+        {
+          "title": "EL MUNDO Y SUS DEMONIOS",
+          "amazonPriceCents": 79398,
+          "amazonUrl": "https://www.amazon.com.br/dp/6077473987",
+          "score": 1
+        }
+      ]
+    },
+    {
+      "title": "Alice's Adventures in Wonderland",
+      "query": "\"Alice's Adventures in Wonderland\" Lewis Carroll livro",
+      "amazonTitle": "Alice’s Adventures in Wonderland",
+      "amazonPriceCents": 5260,
+      "salePriceCents": 3682,
+      "amazonUrl": "https://www.amazon.com.br/dp/B095NZ9MV4",
+      "score": 238,
+      "alternatives": [
+        {
+          "title": "Alice’s Adventures in Wonderland",
+          "amazonPriceCents": 5260,
+          "amazonUrl": "https://www.amazon.com.br/dp/B095NZ9MV4",
+          "score": 238
+        },
+        {
+          "title": "Alice’s Adventures in Wonderland",
+          "amazonPriceCents": 5945,
+          "amazonUrl": "https://www.amazon.com.br/dp/B09484PNN3",
+          "score": 238
+        },
+        {
+          "title": "Alice’s Adventures in Wonderland",
+          "amazonPriceCents": 6374,
+          "amazonUrl": "https://www.amazon.com.br/dp/B097BYQKJY",
+          "score": 238
+        }
+      ]
+    },
+    {
+      "title": "A morte de Ivan Ilitch",
+      "query": "\"A morte de Ivan Ilitch\" Liev Tolstói livro",
+      "amazonTitle": "A Morte de Ivan Ilitch",
+      "amazonPriceCents": 3373,
+      "salePriceCents": 2361,
+      "amazonUrl": "https://www.amazon.com.br/dp/658841045X",
+      "score": 238,
+      "alternatives": [
+        {
+          "title": "A Morte de Ivan Ilitch",
+          "amazonPriceCents": 3373,
+          "amazonUrl": "https://www.amazon.com.br/dp/658841045X",
+          "score": 238
+        },
+        {
+          "title": "A morte de Ivan Ilitch - Смерть Ивана Ильича",
+          "amazonPriceCents": 4990,
+          "amazonUrl": "https://www.amazon.com.br/dp/6583464357",
+          "score": 238
+        },
+        {
+          "title": "A Morte de Ivan Ilitch",
+          "amazonPriceCents": 1413,
+          "amazonUrl": "https://www.amazon.com.br/dp/6580921412",
+          "score": 219
+        }
+      ]
+    },
+    {
+      "title": "Os miseráveis — box (Volumes 1 e 2)",
+      "query": "manual Amazon reference",
+      "amazonTitle": "Box Os Miseráveis - Exclusivo Amazon",
+      "amazonPriceCents": 19235,
+      "amazonUrl": "https://www.amazon.com.br/dp/8520942210",
+      "score": 999,
+      "salePriceCents": 13465,
+      "alternatives": []
+    },
+    {
+      "title": "Problemas de gênero",
+      "query": "\"Problemas de gênero\" Judith Butler livro",
+      "amazonTitle": "Problemas de gênero: Feminismo e subversão da identidade",
+      "amazonPriceCents": 5196,
+      "salePriceCents": 3637,
+      "amazonUrl": "https://www.amazon.com.br/dp/8520006116",
+      "score": 173,
+      "alternatives": [
+        {
+          "title": "Problemas de gênero: Feminismo e subversão da identidade",
+          "amazonPriceCents": 5196,
+          "amazonUrl": "https://www.amazon.com.br/dp/8520006116",
+          "score": 173
+        },
+        {
+          "title": "Corpos que importam: os limites discursivos do \"sexo\"",
+          "amazonPriceCents": 17850,
+          "amazonUrl": "https://www.amazon.com.br/dp/6581097047",
+          "score": -50
+        }
+      ]
+    },
+    {
+      "title": "O mito do normal",
+      "query": "\"O mito do normal\" Gabor Maté livro",
+      "amazonTitle": "O mito do normal: Trauma, saúde e cura em um mundo doente",
+      "amazonPriceCents": 4990,
+      "salePriceCents": 3493,
+      "amazonUrl": "https://www.amazon.com.br/dp/6555646764",
+      "score": 173,
+      "alternatives": [
+        {
+          "title": "O mito do normal: Trauma, saúde e cura em um mundo doente",
+          "amazonPriceCents": 4990,
+          "amazonUrl": "https://www.amazon.com.br/dp/6555646764",
+          "score": 173
+        },
+        {
+          "title": "El mito de la normalidad / The Myth of Normal: Trauma, Enfermedad Y Curacion En Una Cultura Toxica",
+          "amazonPriceCents": 35923,
+          "amazonUrl": "https://www.amazon.com.br/dp/8492917164",
+          "score": 28
+        },
+        {
+          "title": "Quando o Corpo Diz Não",
+          "amazonPriceCents": 6403,
+          "amazonUrl": "https://www.amazon.com.br/dp/6597919327",
+          "score": 3
+        }
+      ]
+    },
+    {
+      "title": "Breves respostas para grandes questões",
+      "query": "\"Breves respostas para grandes questões\" Stephen Hawking livro",
+      "amazonTitle": "Breves respostas para grandes questões - Nova edição",
+      "amazonPriceCents": 3226,
+      "salePriceCents": 2258,
+      "amazonUrl": "https://www.amazon.com.br/dp/8551010255",
+      "score": 173,
+      "alternatives": [
+        {
+          "title": "Breves respostas para grandes questões - Nova edição",
+          "amazonPriceCents": 3226,
+          "amazonUrl": "https://www.amazon.com.br/dp/8551010255",
+          "score": 173
+        },
+        {
+          "title": "Breves Respuestas a Las Grandes Preguntas",
+          "amazonPriceCents": 7718,
+          "amazonUrl": "https://www.amazon.com.br/dp/6075694633",
+          "score": 101
+        },
+        {
+          "title": "Breves respuestas a las grandes preguntas [Hardcover] Hawking, Stephen",
+          "amazonPriceCents": 15419,
+          "amazonUrl": "https://www.amazon.com.br/dp/6075690298",
+          "score": 101
+        }
+      ]
+    },
+    {
+      "title": "Sherlock Holmes — box completo",
+      "query": "manual Amazon reference",
+      "amazonTitle": "Box Sherlock Holmes – Obra completa (Capa dura)",
+      "amazonPriceCents": 10934,
+      "amazonUrl": "https://www.amazon.com.br/dp/8595080836",
+      "score": 999,
+      "salePriceCents": 7654,
+      "alternatives": []
+    },
+    {
+      "title": "Frankenstein",
+      "query": "\"Frankenstein\" Mary Shelley livro",
+      "amazonTitle": "Frankenstein",
+      "amazonPriceCents": 1490,
+      "salePriceCents": 1043,
+      "amazonUrl": "https://www.amazon.com.br/dp/8579493439",
+      "score": 238,
+      "alternatives": [
+        {
+          "title": "Frankenstein",
+          "amazonPriceCents": 1490,
+          "amazonUrl": "https://www.amazon.com.br/dp/8579493439",
+          "score": 238
+        },
+        {
+          "title": "Frankenstein",
+          "amazonPriceCents": 1800,
+          "amazonUrl": "https://www.amazon.com.br/dp/6558701960",
+          "score": 238
+        },
+        {
+          "title": "Frankenstein",
+          "amazonPriceCents": 1900,
+          "amazonUrl": "https://www.amazon.com.br/dp/6558881071",
+          "score": 238
+        }
+      ]
+    },
+    {
+      "title": "The Great Gatsby",
+      "query": "\"The Great Gatsby\" F Scott Fitzgerald book",
+      "amazonTitle": "The Great Gatsby",
+      "amazonPriceCents": 5147,
+      "salePriceCents": 3603,
+      "amazonUrl": "https://www.amazon.com.br/dp/B0CR5VYZ1X",
+      "score": 238,
+      "alternatives": [
+        {
+          "title": "The Great Gatsby",
+          "amazonPriceCents": 5147,
+          "amazonUrl": "https://www.amazon.com.br/dp/B0CR5VYZ1X",
+          "score": 238
+        },
+        {
+          "title": "The Great Gatsby",
+          "amazonPriceCents": 5982,
+          "amazonUrl": "https://www.amazon.com.br/dp/185326041X",
+          "score": 238
+        },
+        {
+          "title": "The Great Gatsby",
+          "amazonPriceCents": 14339,
+          "amazonUrl": "https://www.amazon.com.br/dp/1840221887",
+          "score": 238
+        }
+      ]
+    },
+    {
+      "title": "Moby Dick",
+      "query": "\"Moby Dick\" Herman Melville book",
+      "amazonTitle": "Moby Dick",
+      "amazonPriceCents": 5918,
+      "salePriceCents": 4143,
+      "amazonUrl": "https://www.amazon.com.br/dp/184022830X",
+      "score": 238,
+      "alternatives": [
+        {
+          "title": "Moby Dick",
+          "amazonPriceCents": 5918,
+          "amazonUrl": "https://www.amazon.com.br/dp/184022830X",
+          "score": 238
+        },
+        {
+          "title": "Moby Dick",
+          "amazonPriceCents": 6438,
+          "amazonUrl": "https://www.amazon.com.br/dp/8526282220",
+          "score": 238
+        },
+        {
+          "title": "Moby Dick",
+          "amazonPriceCents": 7899,
+          "amazonUrl": "https://www.amazon.com.br/dp/8508200560",
+          "score": 238
+        }
+      ]
+    },
+    {
+      "title": "A tempestade",
+      "query": "manual Amazon reference",
+      "amazonTitle": "A tempestade",
+      "amazonPriceCents": 4356,
+      "amazonUrl": "https://www.amazon.com.br/dp/8582852452",
+      "score": 999,
+      "salePriceCents": 3049,
+      "alternatives": []
+    },
+    {
+      "title": "Hamlet",
+      "query": "\"Hamlet\" William Shakespeare livro",
+      "amazonTitle": "Hamlet",
+      "amazonPriceCents": 1985,
+      "salePriceCents": 1390,
+      "amazonUrl": "https://www.amazon.com.br/dp/6552942001",
+      "score": 238,
+      "alternatives": [
+        {
+          "title": "Hamlet",
+          "amazonPriceCents": 1985,
+          "amazonUrl": "https://www.amazon.com.br/dp/6552942001",
+          "score": 238
+        },
+        {
+          "title": "Hamlet",
+          "amazonPriceCents": 3325,
+          "amazonUrl": "https://www.amazon.com.br/dp/8572327053",
+          "score": 238
+        },
+        {
+          "title": "Hamlet",
+          "amazonPriceCents": 4500,
+          "amazonUrl": "https://www.amazon.com.br/dp/8510080305",
+          "score": 238
+        }
+      ]
+    },
+    {
+      "title": "Coral e outros poemas",
+      "query": "\"Coral e outros poemas\" Sophia de Mello Breyner Andresen livro",
+      "amazonTitle": "Coral e outros poemas",
+      "amazonPriceCents": 7868,
+      "salePriceCents": 5508,
+      "amazonUrl": "https://www.amazon.com.br/dp/8535930795",
+      "score": 193,
+      "alternatives": [
+        {
+          "title": "Coral e outros poemas",
+          "amazonPriceCents": 7868,
+          "amazonUrl": "https://www.amazon.com.br/dp/8535930795",
+          "score": 193
+        },
+        {
+          "title": "A princesa salva a si mesma neste livro",
+          "amazonPriceCents": 2300,
+          "amazonUrl": "https://www.amazon.com.br/dp/8544106595",
+          "score": -27
+        }
+      ]
+    },
+    {
+      "title": "Algoritmos para viver",
+      "query": "\"Algoritmos para viver\" Brian Christian e Tom Griffiths livro",
+      "amazonTitle": "Algoritmos para viver - A ciência exata das decisões humanas",
+      "amazonPriceCents": 9552,
+      "salePriceCents": 6686,
+      "amazonUrl": "https://www.amazon.com.br/dp/8535929304",
+      "score": 173,
+      "alternatives": [
+        {
+          "title": "Algoritmos para viver - A ciência exata das decisões humanas",
+          "amazonPriceCents": 9552,
+          "amazonUrl": "https://www.amazon.com.br/dp/8535929304",
+          "score": 173
+        },
+        {
+          "title": "O livro da psicologia",
+          "amazonPriceCents": 6278,
+          "amazonUrl": "https://www.amazon.com.br/dp/8525062499",
+          "score": -27
+        },
+        {
+          "title": "Mulheres que correm com os lobos: Mitos e histórias do arquétipo da Mulher Selvagem",
+          "amazonPriceCents": 6499,
+          "amazonUrl": "https://www.amazon.com.br/dp/853252978X",
+          "score": -27
+        }
+      ]
+    },
+    {
+      "title": "Guerra sem fim",
+      "query": "\"Guerra sem fim\" Joe Haldeman livro",
+      "amazonTitle": "Guerra sem fim",
+      "amazonPriceCents": 4170,
+      "salePriceCents": 2919,
+      "amazonUrl": "https://www.amazon.com.br/dp/8576573946",
+      "score": 193,
+      "alternatives": [
+        {
+          "title": "Guerra sem fim",
+          "amazonPriceCents": 4170,
+          "amazonUrl": "https://www.amazon.com.br/dp/8576573946",
+          "score": 193
+        }
+      ]
+    },
+    {
+      "title": "Silêncio — Parte 1",
+      "query": "manual Amazon reference",
+      "amazonTitle": "Batman: Silêncio (DC de Bolso)",
+      "amazonPriceCents": 4978,
+      "amazonUrl": "https://www.amazon.com.br/dp/652592796X",
+      "score": 999,
+      "note": "A parte 1 exata aparece sem preço confiável; referência usada a partir da edição Batman: Silêncio com preço na Amazon.",
+      "salePriceCents": 3485,
+      "alternatives": []
+    },
+    {
+      "title": "HQ do Batman",
+      "query": "HQ do Batman capa dura Panini",
+      "amazonTitle": "Batman: a Tumba do rei tut",
+      "amazonPriceCents": 3499,
+      "salePriceCents": 2449,
+      "amazonUrl": "https://www.amazon.com.br/dp/8583683905",
+      "score": 98,
+      "alternatives": [
+        {
+          "title": "Batman: a Tumba do rei tut",
+          "amazonPriceCents": 3499,
+          "amazonUrl": "https://www.amazon.com.br/dp/8583683905",
+          "score": 98
+        },
+        {
+          "title": "Batman 66",
+          "amazonPriceCents": 3990,
+          "amazonUrl": "https://www.amazon.com.br/dp/8583680809",
+          "score": 98
+        },
+        {
+          "title": "Batman / Superman - Dois Mundos",
+          "amazonPriceCents": 4000,
+          "amazonUrl": "https://www.amazon.com.br/dp/8583681627",
+          "score": 98
+        }
+      ]
+    },
+    {
+      "title": "Psicopatologia da vida cotidiana e sobre os sonhos",
+      "query": "manual Amazon reference",
+      "amazonTitle": "Freud (1901) - Obras completas volume 5: Psicopatologia da vida cotidiana e Sobre os sonhos",
+      "amazonPriceCents": 7944,
+      "amazonUrl": "https://www.amazon.com.br/dp/6559210502",
+      "score": 999,
+      "salePriceCents": 5561,
+      "alternatives": []
+    },
+    {
+      "title": "100 anos de solidão",
+      "query": "manual Amazon reference",
+      "amazonTitle": "Cem anos de solidão",
+      "amazonPriceCents": 4026,
+      "amazonUrl": "https://www.amazon.com.br/dp/8501012076",
+      "score": 999,
+      "salePriceCents": 2818,
+      "alternatives": []
+    },
+    {
+      "title": "Laranja mecânica",
+      "query": "manual Amazon reference",
+      "amazonTitle": "Laranja Mecânica",
+      "amazonPriceCents": 5032,
+      "amazonUrl": "https://www.amazon.com.br/dp/8576574462",
+      "score": 999,
+      "salePriceCents": 3522,
+      "alternatives": []
+    },
+    {
+      "title": "O corpo guarda as marcas",
+      "query": "\"O corpo guarda as marcas\" Bessel van der Kolk livro",
+      "amazonTitle": "O corpo guarda as marcas: Cérebro, mente e corpo na cura do trauma",
+      "amazonPriceCents": 5141,
+      "salePriceCents": 3599,
+      "amazonUrl": "https://www.amazon.com.br/dp/8543110017",
+      "score": 173,
+      "alternatives": [
+        {
+          "title": "O corpo guarda as marcas: Cérebro, mente e corpo na cura do trauma",
+          "amazonPriceCents": 5141,
+          "amazonUrl": "https://www.amazon.com.br/dp/8543110017",
+          "score": 173
+        },
+        {
+          "title": "Quando o Corpo Diz Não",
+          "amazonPriceCents": 6403,
+          "amazonUrl": "https://www.amazon.com.br/dp/6597919327",
+          "score": -9
+        },
+        {
+          "title": "Dentro de Nós",
+          "amazonPriceCents": 5975,
+          "amazonUrl": "https://www.amazon.com.br/dp/6597919378",
+          "score": -27
+        }
+      ]
+    },
+    {
+      "title": "O livro da mente",
+      "query": "O livro da mente psicologia",
+      "amazonTitle": "O livro da psicologia",
+      "amazonPriceCents": 6278,
+      "salePriceCents": 4395,
+      "amazonUrl": "https://www.amazon.com.br/dp/8525062499",
+      "score": 71,
+      "alternatives": [
+        {
+          "title": "O livro da psicologia",
+          "amazonPriceCents": 6278,
+          "amazonUrl": "https://www.amazon.com.br/dp/8525062499",
+          "score": 71
+        },
+        {
+          "title": "O livro das fobias e manias: 99 obsessões para entender a mente humana",
+          "amazonPriceCents": 2796,
+          "amazonUrl": "https://www.amazon.com.br/dp/6555606061",
+          "score": 53
+        },
+        {
+          "title": "O livro da psicologia (As grandes ideias de todos os tempos)",
+          "amazonPriceCents": 9490,
+          "amazonUrl": "https://www.amazon.com.br/dp/8568014321",
+          "score": 18
+        }
+      ]
+    },
+    {
+      "title": "Longe da árvore",
+      "query": "\"Longe da árvore\" Andrew Solomon livro",
+      "amazonTitle": "Longe da árvore",
+      "amazonPriceCents": 13519,
+      "salePriceCents": 9463,
+      "amazonUrl": "https://www.amazon.com.br/dp/8535923209",
+      "score": 193,
+      "alternatives": [
+        {
+          "title": "Longe da árvore",
+          "amazonPriceCents": 13519,
+          "amazonUrl": "https://www.amazon.com.br/dp/8535923209",
+          "score": 193
+        },
+        {
+          "title": "Longe da Árvore",
+          "amazonPriceCents": 70200,
+          "amazonUrl": "https://www.amazon.com.br/dp/9897223126",
+          "score": 183
+        },
+        {
+          "title": "O demônio do meio-dia: Uma anatomia da depressão",
+          "amazonPriceCents": 3990,
+          "amazonUrl": "https://www.amazon.com.br/dp/9897223126",
+          "score": -42
+        }
+      ]
+    },
+    {
+      "title": "Rápido e devagar",
+      "query": "manual Amazon reference",
+      "amazonTitle": "Rápido e devagar: Duas formas de pensar",
+      "amazonPriceCents": 5975,
+      "amazonUrl": "https://www.amazon.com.br/dp/853900383X",
+      "score": 999,
+      "salePriceCents": 4183,
+      "alternatives": []
+    },
+    {
+      "title": "10% humano",
+      "query": "\"10% humano\" Alanna Collen livro",
+      "amazonTitle": "10% humano: Como os micro-organismos são a chave para a saúde do corpo e da mente",
+      "amazonPriceCents": 4379,
+      "salePriceCents": 3065,
+      "amazonUrl": "https://www.amazon.com.br/dp/8543103444",
+      "score": 173,
+      "alternatives": [
+        {
+          "title": "10% humano: Como os micro-organismos são a chave para a saúde do corpo e da mente",
+          "amazonPriceCents": 4379,
+          "amazonUrl": "https://www.amazon.com.br/dp/8543103444",
+          "score": 173
+        },
+        {
+          "title": "10% Human: How Your Body&#x27;s Microbes Hold the Key to Health and Happiness",
+          "amazonPriceCents": 10691,
+          "amazonUrl": "https://www.amazon.com.br/dp/0062345990",
+          "score": 3
+        }
+      ]
+    },
+    {
+      "title": "Devassos no paraíso",
+      "query": "\"Devassos no paraíso\" João Silvério Trevisan livro",
+      "amazonTitle": "Devassos no Paraíso (4ª edição, revista e ampliada) - A homossexualidade no Brasil, da colônia à atualidade",
+      "amazonPriceCents": 9090,
+      "salePriceCents": 6363,
+      "amazonUrl": "https://www.amazon.com.br/dp/8547000658",
+      "score": 173,
+      "alternatives": [
+        {
+          "title": "Devassos no Paraíso (4ª edição, revista e ampliada) - A homossexualidade no Brasil, da colônia à atualidade",
+          "amazonPriceCents": 9090,
+          "amazonUrl": "https://www.amazon.com.br/dp/8547000658",
+          "score": 173
+        },
+        {
+          "title": "Em nome do desejo",
+          "amazonPriceCents": 7192,
+          "amazonUrl": "https://www.amazon.com.br/dp/850192167X",
+          "score": -42
+        }
+      ]
+    },
+    {
+      "title": "Nação dopamina",
+      "query": "\"Nação dopamina\" Anna Lembke livro",
+      "amazonTitle": "Nação dopamina: Por que o excesso de prazer está nos deixando infelizes e o que podemos fazer para mudar (leia também Nação tarja preta)",
+      "amazonPriceCents": 4227,
+      "salePriceCents": 2959,
+      "amazonUrl": "https://www.amazon.com.br/dp/B08KPKHVXQ",
+      "score": 173,
+      "alternatives": [
+        {
+          "title": "Nação dopamina: Por que o excesso de prazer está nos deixando infelizes e o que podemos fazer para mudar (leia também Nação tarja preta)",
+          "amazonPriceCents": 4227,
+          "amazonUrl": "https://www.amazon.com.br/dp/B08KPKHVXQ",
+          "score": 173
+        },
+        {
+          "title": "Generación dopamina (Spanish Edition)",
+          "amazonPriceCents": 5504,
+          "amazonUrl": "https://www.amazon.com.br/dp/989583182X",
+          "score": -14
+        },
+        {
+          "title": "GENERACION DOPAMINA",
+          "amazonPriceCents": 38700,
+          "amazonUrl": "https://www.amazon.com.br/dp/9507883886",
+          "score": -24
+        }
+      ]
+    },
+    {
+      "title": "Senhor das moscas",
+      "query": "manual Amazon reference",
+      "amazonTitle": "Senhor das Moscas (Nova edição): Prêmio Nobel de Literatura",
+      "amazonPriceCents": 3364,
+      "amazonUrl": "https://www.amazon.com.br/dp/8520918433",
+      "score": 999,
+      "salePriceCents": 2355,
+      "alternatives": []
+    },
+    {
+      "title": "Memórias póstumas de Brás Cubas",
+      "query": "manual Amazon reference",
+      "amazonTitle": "Memórias Póstumas de Brás Cubas",
+      "amazonPriceCents": 1350,
+      "amazonUrl": "https://www.amazon.com.br/dp/6554700072",
+      "score": 999,
+      "salePriceCents": 945,
+      "alternatives": []
+    },
+    {
+      "title": "Grande sertão: veredas",
+      "query": "manual Amazon reference",
+      "amazonTitle": "Grande sertão: veredas",
+      "amazonPriceCents": 7475,
+      "amazonUrl": "https://www.amazon.com.br/dp/8535931988",
+      "score": 999,
+      "salePriceCents": 5233,
+      "alternatives": []
+    },
+    {
+      "title": "A corrente",
+      "query": "manual Amazon reference",
+      "amazonTitle": "A corrente",
+      "amazonPriceCents": 4626,
+      "amazonUrl": "https://www.amazon.com.br/dp/850111765X",
+      "score": 999,
+      "salePriceCents": 3238,
+      "alternatives": []
+    },
+    {
+      "title": "Box completo do Senhor dos Anéis",
+      "query": "manual Amazon reference",
+      "amazonTitle": "Box Trilogia O Senhor dos Anéis",
+      "amazonPriceCents": 18990,
+      "amazonUrl": "https://www.amazon.com.br/dp/8595086354",
+      "score": 999,
+      "salePriceCents": 13293,
+      "alternatives": []
+    },
+    {
+      "title": "Manual de mindfulness e autocompaixão",
+      "query": "manual Amazon reference",
+      "amazonTitle": "Manual de Mindfulness e Autocompaixão: Um Guia para Construir Forças Internas e Prosperar na Arte de Ser Seu Melhor Amigo",
+      "amazonPriceCents": 9430,
+      "amazonUrl": "https://www.amazon.com.br/dp/8582715536",
+      "score": 999,
+      "salePriceCents": 6601,
+      "alternatives": []
+    },
+    {
+      "title": "O dom extraordinário de ser comum",
+      "query": "manual Amazon reference",
+      "amazonTitle": "O Dom Extraordinário de Ser Comum: Encontre a Felicidade Exatamente Onde Você Está",
+      "amazonPriceCents": 10086,
+      "amazonUrl": "https://www.amazon.com.br/dp/6558821400",
+      "score": 999,
+      "salePriceCents": 7060,
+      "alternatives": []
+    },
+    {
+      "title": "A geração ansiosa",
+      "query": "manual Amazon reference",
+      "amazonTitle": "A geração ansiosa: Como a infância hiperconectada está causando uma epidemia de transtornos mentais",
+      "amazonPriceCents": 4332,
+      "amazonUrl": "https://www.amazon.com.br/dp/8535938532",
+      "score": 999,
+      "salePriceCents": 3032,
+      "alternatives": []
+    },
+    {
+      "title": "Não acredite em tudo que você sente",
+      "query": "manual Amazon reference",
+      "amazonTitle": "Não Acredite em Tudo Que Você Sente: Identifique seus Esquemas Emocionais e Liberte-se da Ansiedade e da Depressão",
+      "amazonPriceCents": 6000,
+      "amazonUrl": "https://www.amazon.com.br/s?k=%22N%C3%A3o+acredite+em+tudo+que+voc%C3%AA+sente%22+Robert+Leahy+livro",
+      "score": 999,
+      "salePriceCents": 4200,
+      "alternatives": []
+    },
+    {
+      "title": "Como aprendemos?",
+      "query": "manual Amazon reference",
+      "amazonTitle": "How We Learn: The Surprising Truth About When, Where, and Why It Happens",
+      "amazonPriceCents": 4490,
+      "amazonUrl": "https://www.amazon.com.br/dp/0241366461",
+      "score": 999,
+      "note": "A edição em português apareceu sem preço; referência usada a partir da edição original do mesmo autor com preço na Amazon.",
+      "salePriceCents": 3143,
+      "alternatives": []
+    },
+    {
+      "title": "Vencendo o TDAH adulto",
+      "query": "manual Amazon reference",
+      "amazonTitle": "Vencendo o TDAH Adulto: Transtorno de Déficit de Atenção/Hiperatividade",
+      "amazonPriceCents": 10080,
+      "amazonUrl": "https://www.amazon.com.br/s?k=%22Vencendo+o+TDAH+adulto%22+Russell+Barkley+livro",
+      "score": 999,
+      "salePriceCents": 7056,
+      "alternatives": []
+    }
+  ]
+}

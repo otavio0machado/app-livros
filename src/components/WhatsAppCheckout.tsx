@@ -1,14 +1,12 @@
 'use client';
 
+import { formatCartTotalLabel, formatPriceLabel } from '@/lib/price';
 import { useCart } from './CartProvider';
-
-function formatPrice(cents: number): string {
-  return `R$ ${(cents / 100).toFixed(2).replace('.', ',')}`;
-}
 
 export default function WhatsAppCheckout() {
   const { items, totalPrice, clearCart } = useCart();
   const phone = process.env.NEXT_PUBLIC_WHATSAPP_NUMBER || '5551991914837';
+  const hasPendingPrices = items.some((item) => item.price_cents <= 0);
 
   function buildMessage(): string {
     let msg = 'Oi! Tenho interesse nesses livros:\n\n';
@@ -16,11 +14,11 @@ export default function WhatsAppCheckout() {
     items.forEach((item, i) => {
       msg += `${i + 1}. ${item.title}`;
       if (item.author) msg += ` - ${item.author}`;
-      msg += ` (${formatPrice(item.price_cents)})`;
+      msg += ` (${formatPriceLabel(item.price_cents)})`;
       msg += '\n';
     });
 
-    msg += `\nTotal: ${formatPrice(totalPrice)}`;
+    msg += `\nTotal: ${formatCartTotalLabel(totalPrice, hasPendingPrices)}`;
     msg += '\n\nPodemos combinar?';
 
     return msg;

@@ -1,4 +1,5 @@
 import { NextResponse } from 'next/server';
+import type { Book } from '@/types';
 import { getSupabaseAdmin } from '@/lib/supabase';
 import { isAuthenticated } from '@/lib/auth';
 import {
@@ -7,15 +8,16 @@ import {
   sanitizePublicBook,
   sanitizeSearchTerm,
 } from '@/lib/books';
+import { mergeWithListedBooks } from '@/lib/catalog';
 
 export async function GET(request: Request) {
-  try {
-    const { searchParams } = new URL(request.url);
-    const search = sanitizeSearchTerm(searchParams.get('search') || '');
-    const category = searchParams.get('category') || '';
-    const type = searchParams.get('type') || '';
-    const subject = searchParams.get('subject') || '';
+  const { searchParams } = new URL(request.url);
+  const search = sanitizeSearchTerm(searchParams.get('search') || '');
+  const category = searchParams.get('category') || '';
+  const type = searchParams.get('type') || '';
+  const subject = searchParams.get('subject') || '';
 
+  try {
     const supabase = getSupabaseAdmin();
     let query = supabase
       .from('books')
@@ -35,12 +37,29 @@ export async function GET(request: Request) {
     const { data, error } = await query;
 
     if (error) {
-      return NextResponse.json({ error: error.message }, { status: 500 });
+      return NextResponse.json(
+        mergeWithListedBooks([], { search, category, type, subject }).map((book) =>
+          sanitizePublicBook(book as unknown as Record<string, unknown>)
+        )
+      );
     }
 
-    return NextResponse.json((data || []).map((row) => sanitizePublicBook(row)));
+    const supabaseBooks = (data || []).map((row) => parseMedia(row)) as Book[];
+    const books = mergeWithListedBooks(supabaseBooks, {
+      search,
+      category,
+      type,
+      subject,
+    });
+    return NextResponse.json(
+      books.map((book) => sanitizePublicBook(book as unknown as Record<string, unknown>))
+    );
   } catch {
-    return NextResponse.json({ error: 'Erro ao carregar livros' }, { status: 500 });
+    return NextResponse.json(
+      mergeWithListedBooks([], { search, category, type, subject }).map((book) =>
+        sanitizePublicBook(book as unknown as Record<string, unknown>)
+      )
+    );
   }
 }
 

@@ -3,6 +3,7 @@
 import Image from 'next/image';
 import Link from 'next/link';
 import type { Book } from '@/types';
+import { formatCurrency, formatPriceLabel, hasKnownPrice } from '@/lib/price';
 import { useCart } from './CartProvider';
 
 const CONDITION_LABEL: Record<string, string> = {
@@ -15,15 +16,14 @@ const CONDITION_LABEL: Record<string, string> = {
   'Usado - Contém bastante marcações, escritos e/ou exercícios resolvidos.': 'Com marcações',
 };
 
-function formatPrice(cents: number): string {
-  return (cents / 100).toFixed(2).replace('.', ',');
-}
-
 export default function BookCard({ book }: { book: Book }) {
   const { addItem, isInCart } = useCart();
   const inCart = isInCart(book.id);
   const conditionLabel = CONDITION_LABEL[book.condition_detail] || book.condition_detail;
-  const hasDiscount = book.collection_discount_pct && book.collection_discount_pct > 0;
+  const hasDiscount =
+    hasKnownPrice(book.price_cents) &&
+    book.collection_discount_pct &&
+    book.collection_discount_pct > 0;
 
   function handleAdd(e: React.MouseEvent) {
     e.preventDefault();
@@ -89,24 +89,23 @@ export default function BookCard({ book }: { book: Book }) {
               {hasDiscount ? (
                 <>
                   <p className="text-warm-400 text-[10px] sm:text-xs line-through">
-                    R$ {formatPrice(Math.round(book.price_cents / (1 - book.collection_discount_pct! / 100)))}
+                    R$ {formatCurrency(Math.round(book.price_cents / (1 - book.collection_discount_pct! / 100)))}
                   </p>
                   <p className="text-warm-900 font-semibold text-sm sm:text-base">
                     <span className="text-[10px] sm:text-xs font-normal text-warm-500">R$</span>{' '}
-                    {formatPrice(book.price_cents)}
+                    {formatCurrency(book.price_cents)}
                   </p>
                 </>
               ) : (
-                <p className="text-warm-900 font-semibold text-sm sm:text-base">
-                  <span className="text-[10px] sm:text-xs font-normal text-warm-500">R$</span>{' '}
-                  {formatPrice(book.price_cents)}
+                <p className="text-warm-900 font-semibold text-[13px] sm:text-base whitespace-nowrap">
+                  {formatPriceLabel(book.price_cents)}
                 </p>
               )}
             </div>
             <button
               onClick={handleAdd}
               disabled={inCart}
-              className={`text-[11px] sm:text-xs px-2 sm:px-2.5 py-1.5 sm:py-1.5 rounded-lg font-medium transition-all flex-shrink-0 min-h-[32px] min-w-[32px] flex items-center justify-center ${
+              className={`text-[10px] sm:text-xs px-2 sm:px-2.5 py-1.5 sm:py-1.5 rounded-lg font-medium transition-all flex-shrink-0 min-h-[32px] min-w-[32px] flex items-center justify-center ${
                 inCart
                   ? 'bg-warm-100 text-warm-400'
                   : 'bg-navy-700 text-white hover:bg-navy-600 active:scale-95'

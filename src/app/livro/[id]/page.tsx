@@ -3,6 +3,8 @@ import type { Book, MediaItem } from '@/types';
 import AddToCartButton from './AddToCartButton';
 import MediaGallery from '@/components/MediaGallery';
 import { getSupabaseAdmin } from '@/lib/supabase';
+import { getListedBookById } from '@/lib/catalog';
+import { formatCurrency, formatPriceLabel, hasKnownPrice } from '@/lib/price';
 
 function parseMedia(book: Record<string, unknown>): MediaItem[] {
   if (book.media && typeof book.media === 'string') {
@@ -14,18 +16,23 @@ function parseMedia(book: Record<string, unknown>): MediaItem[] {
 }
 
 async function getBook(id: string): Promise<(Book & { mediaItems: MediaItem[] }) | null> {
+  const bookId = parseInt(id);
   try {
     const supabase = getSupabaseAdmin();
     const { data, error } = await supabase
       .from('books')
       .select('*')
-      .eq('id', parseInt(id))
+      .eq('id', bookId)
       .single();
-    if (error || !data) return null;
+    if (error || !data) {
+      const listedBook = getListedBookById(bookId);
+      return listedBook ? { ...listedBook, mediaItems: listedBook.media } : null;
+    }
     const mediaItems = parseMedia(data);
     return { ...data, media: mediaItems, mediaItems } as Book & { mediaItems: MediaItem[] };
   } catch {
-    return null;
+    const listedBook = getListedBookById(bookId);
+    return listedBook ? { ...listedBook, mediaItems: listedBook.media } : null;
   }
 }
 
@@ -38,10 +45,6 @@ const CONDITION_LABEL: Record<string, string> = {
   'Usado - Contém marcas de uso, bastante marcações, escritos e/ou exercícios resolvidos.': 'Bastante uso',
   'Usado - Contém bastante marcações, escritos e/ou exercícios resolvidos.': 'Com marcações',
 };
-
-function formatPrice(cents: number): string {
-  return (cents / 100).toFixed(2).replace('.', ',');
-}
 
 export default async function LivroPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
@@ -61,6 +64,10 @@ export default async function LivroPage({ params }: { params: Promise<{ id: stri
   }
 
   const conditionLabel = CONDITION_LABEL[book.condition_detail] || book.condition_detail;
+  const hasDiscount =
+    hasKnownPrice(book.price_cents) &&
+    book.collection_discount_pct &&
+    book.collection_discount_pct > 0;
 
   return (
     <div className="min-h-screen">
@@ -92,13 +99,13 @@ export default async function LivroPage({ params }: { params: Promise<{ id: stri
           </div>
 
           <div className="flex flex-wrap items-center gap-2 sm:gap-3">
-            {book.collection_discount_pct && book.collection_discount_pct > 0 ? (
+            {hasDiscount ? (
               <>
                 <p className="text-base sm:text-lg text-warm-400 line-through">
-                  R$ {formatPrice(Math.round(book.price_cents / (1 - book.collection_discount_pct / 100)))}
+                  R$ {formatCurrency(Math.round(book.price_cents / (1 - book.collection_discount_pct! / 100)))}
                 </p>
                 <p className="text-xl sm:text-2xl font-bold text-warm-900">
-                  <span className="text-xs sm:text-sm font-normal text-warm-500">R$</span> {formatPrice(book.price_cents)}
+                  <span className="text-xs sm:text-sm font-normal text-warm-500">R$</span> {formatCurrency(book.price_cents)}
                 </p>
                 <span className="bg-red-500 text-white text-[11px] sm:text-xs font-bold px-2 py-0.5 sm:py-1 rounded-lg">
                   -{book.collection_discount_pct}%
@@ -106,7 +113,7 @@ export default async function LivroPage({ params }: { params: Promise<{ id: stri
               </>
             ) : (
               <p className="text-xl sm:text-2xl font-bold text-warm-900">
-                <span className="text-xs sm:text-sm font-normal text-warm-500">R$</span> {formatPrice(book.price_cents)}
+                {formatPriceLabel(book.price_cents)}
               </p>
             )}
           </div>

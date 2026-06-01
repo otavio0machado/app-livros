@@ -28,7 +28,7 @@ export default function LandingPage() {
           </h1>
           <p className="mt-3 sm:mt-4 text-warm-500 text-base sm:text-lg leading-relaxed">
             Estou vendendo meu acervo pessoal de livros e apostilas de cursinho.
-            Tudo organizado, com fotos reais e compra simplificada pelo WhatsApp.
+            Tudo organizado, com capas de referência e compra simplificada pelo WhatsApp.
           </p>
           <div className="mt-6 sm:mt-8">
             <Link
@@ -58,7 +58,7 @@ export default function LandingPage() {
             </div>
             <h3 className="font-semibold text-warm-800 mb-1">Escolha os livros</h3>
             <p className="text-warm-500 text-sm leading-relaxed">
-              Navegue pelo acervo, veja fotos e detalhes de cada item.
+              Navegue pelo acervo, veja capas e detalhes de cada item.
             </p>
           </div>
           <div>
@@ -91,9 +91,9 @@ export default function LandingPage() {
       <section className="max-w-3xl mx-auto px-5 py-10 sm:py-20">
         <div className="grid sm:grid-cols-3 gap-6">
           <div className="bg-warm-100/60 rounded-2xl p-5">
-            <p className="text-warm-800 font-semibold text-sm mb-1">Fotos reais</p>
+            <p className="text-warm-800 font-semibold text-sm mb-1">Capas e detalhes</p>
             <p className="text-warm-500 text-sm">
-              Cada livro tem foto do próprio exemplar que você vai receber.
+              Cada livro tem capa de referência; estado e edição são confirmados pelo WhatsApp.
             </p>
           </div>
           <div className="bg-warm-100/60 rounded-2xl p-5">

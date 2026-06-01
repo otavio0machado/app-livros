@@ -4,13 +4,11 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { useCart } from '@/components/CartProvider';
 import WhatsAppCheckout from '@/components/WhatsAppCheckout';
-
-function formatPrice(cents: number): string {
-  return (cents / 100).toFixed(2).replace('.', ',');
-}
+import { formatCartTotalLabel, formatPriceLabel } from '@/lib/price';
 
 export default function CarrinhoPage() {
   const { items, removeItem, totalPrice } = useCart();
+  const hasPendingPrices = items.some((item) => item.price_cents <= 0);
 
   return (
     <div className="min-h-screen">
@@ -60,7 +58,9 @@ export default function CarrinhoPage() {
                   <div className="flex-1 min-w-0">
                     <h3 className="font-medium text-warm-800 text-sm line-clamp-2">{item.title}</h3>
                     <p className="text-xs text-warm-400 truncate">{item.author}</p>
-                    <p className="text-sm font-semibold text-warm-900 mt-1">R$ {formatPrice(item.price_cents)}</p>
+                    <p className="text-sm font-semibold text-warm-900 mt-1">
+                      {formatPriceLabel(item.price_cents)}
+                    </p>
                   </div>
 
                   <button
@@ -81,7 +81,9 @@ export default function CarrinhoPage() {
               <span className="text-warm-500 text-sm">
                 Total ({items.length} {items.length === 1 ? 'item' : 'itens'})
               </span>
-              <span className="text-xl font-bold text-warm-900">R$ {formatPrice(totalPrice)}</span>
+              <span className="text-xl font-bold text-warm-900">
+                {formatCartTotalLabel(totalPrice, hasPendingPrices)}
+              </span>
             </div>
 
             {/* WhatsApp */}
